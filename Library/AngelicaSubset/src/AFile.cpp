@@ -7,8 +7,7 @@
 #include <iostream>
 
 AFile::AFile()
-    : m_pFile(nullptr)
-    , m_strFilename()
+    : m_strFilename()
     , m_strRelativePath()
     , m_strFullPath()
     , m_flags(0)

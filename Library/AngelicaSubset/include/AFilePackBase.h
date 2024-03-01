@@ -2,6 +2,9 @@
 #define _AFILEPACKBASE_H_
 
 #include "ABaseDef.h"
+#include "AFile.h"
+
+#include <fstream>
 
 #define MAX_FILE_PACKAGE 0x7fffff00U
 
@@ -33,9 +36,10 @@ public:
 
 		size_t read(void* buffer, size_t size, size_t count);
 		size_t write(const void* buffer, size_t size, size_t count);
-		void seek(int64_t offset, int32_t origin);
-		uint32_t tell() const;
-		void SetPackageFileSize(uint32_t dwFileSize);
+		
+		std::streampos tell();
+		void seek(int64_t offset, AFILE_SEEK origin);
+		void SetPackageFileSize(int64_t dwFileSize);
 
 		uint64_t GetPackageFileSize() const { return m_size1 + m_size2; }
 
@@ -44,8 +48,8 @@ public:
 		std::wstring m_szPath2;
 		std::wstring m_szMode;
 
-		FILE* m_pFile1;
-		FILE* m_pFile2;
+		std::fstream m_fileStream1;
+		std::fstream m_fileStream2;
 
 		int64_t m_size1;
 		int64_t m_size2;

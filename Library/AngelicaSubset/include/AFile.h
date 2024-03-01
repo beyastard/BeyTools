@@ -29,6 +29,14 @@ class AFile
 {
 public:
     AFile();
+
+    AFile(const std::wstring& filename)
+        : m_fileStream(filename, std::ios::binary)
+        , m_flags(0)
+        , m_timeStamp(0)
+        , m_bHasOpened(false)
+    {}
+
     virtual ~AFile();
 
     virtual bool Open(const std::wstring& filepath, std::ios_base::openmode mode);
@@ -57,7 +65,7 @@ public:
 
     std::wstring changeFileExtension(const std::wstring& filePath, const std::wstring& ext);
 
-    FILE* GetFilePointer() { return m_pFile; }
+    std::fstream& GetFileStream() { return m_fileStream; }
 
     std::wstring& GetFileName() { return m_strFilename; }
     std::wstring& GetRelativePath() { return m_strRelativePath; }
@@ -77,7 +85,6 @@ protected:
     bool m_bHasOpened;
 
 private:
-    FILE* m_pFile;
     std::fstream m_fileStream;
     std::mutex m_mutex;
 };
