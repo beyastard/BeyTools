@@ -199,8 +199,8 @@ public:
 	CTriggerData();
 	~CTriggerData();
 
-	bool Load(FILE* pFile);
-	bool Save(FILE* pFile);
+	bool Load(std::ifstream& ifs);
+	bool Save(std::ofstream& ofs);
 	void Release();
 
 	char* GetName() { return szName; }
@@ -241,8 +241,8 @@ public:
 	void DelOperation(uint32_t idx);
 
 protected:
-	static bool ReadConditionTree(FILE* pFile, _s_tree_item* pNode);
-	static bool SaveConditionTree(FILE* pFile, const _s_tree_item* pNode);
+	static bool ReadConditionTree(std::ifstream& ifs, _s_tree_item* pNode);
+	static bool SaveConditionTree(std::ofstream& ofs, const _s_tree_item* pNode);
 
 private:
 	char szName[128];
@@ -270,8 +270,8 @@ public:
 	bool Save(const std::string& path);
 	bool Save(const std::wstring& path);
 
-	bool Load(FILE* pFile);
-	bool Save(FILE* pFile);
+	bool Load(std::ifstream& ifs);
+	bool Save(std::ofstream& ofs);
 
 	void Release();
 

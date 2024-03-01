@@ -31,17 +31,17 @@ public:
 		~CPackageFile();
 
 		bool Open(const std::wstring& szFileName, const std::wstring szMode);
-		bool Phase2Open(uint32_t dwOffset);
+		bool Phase2Open(int64_t dwOffset);
 		bool Close();
 
-		size_t read(void* buffer, size_t size, size_t count);
-		size_t write(const void* buffer, size_t size, size_t count);
+		int64_t read(void* buffer, int64_t size, int64_t count);
+		int64_t write(const void* buffer, int64_t size, int64_t count);
 		
 		std::streampos tell();
 		void seek(int64_t offset, AFILE_SEEK origin);
 		void SetPackageFileSize(int64_t dwFileSize);
 
-		uint64_t GetPackageFileSize() const { return m_size1 + m_size2; }
+		int64_t GetPackageFileSize() const { return m_size1 + m_size2; }
 
 	private:
 		std::wstring m_szPath;
@@ -65,7 +65,7 @@ public:
 	virtual const std::wstring& GetFolder() const = 0;
 	virtual bool IsFileExist(const std::wstring& szFileName) = 0;
 
-	virtual void* OpenSharedFile(const std::wstring& szFileName, uint8_t** ppFileBuf, uint32_t* pdwFileLen, bool bTempMem) = 0;
+	virtual void* OpenSharedFile(const std::wstring& szFileName, uint8_t** ppFileBuf, int64_t* pdwFileLen, bool bTempMem) = 0;
 };
 
 #endif

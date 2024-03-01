@@ -1,6 +1,8 @@
 #include "Policy.h"
 #include "PolicyType.h"
 
+#include <fstream>
+
 enum
 {
 	CONDITION_TREE_NULL,
@@ -24,91 +26,91 @@ CTriggerData::CTriggerData()
 
 CTriggerData::~CTriggerData() {}
 
-bool CTriggerData::Load(FILE* pFile)
+bool CTriggerData::Load(std::ifstream& ifs)
 {
 	uint32_t dwVersion;
-	fread(&dwVersion, sizeof(uint32_t), 1, pFile);
+	ifs.read(reinterpret_cast<char*>(&dwVersion), sizeof(uint32_t));
 
 	if (dwVersion == 0)
 	{
 
-		fread(&uID, sizeof(uint32_t), 1, pFile);
-		fread(&bActive, sizeof(bool), 1, pFile);
-		fread(&bRun, sizeof(bool), 1, pFile);
-		fread(&runCondition, sizeof(char), 1, pFile);
-		fread(szName, sizeof(char) * 128, 1, pFile);
+		ifs.read(reinterpret_cast<char*>(&uID), sizeof(uint32_t));
+		ifs.read(reinterpret_cast<char*>(&bActive), sizeof(bool));
+		ifs.read(reinterpret_cast<char*>(&bRun), sizeof(bool));
+		ifs.read(reinterpret_cast<char*>(&runCondition), sizeof(char));
+		ifs.read(szName, sizeof(char) * 128);
 
 		int32_t n = 0;
 
 		// Reading condition data
 		rootCondition = new _s_tree_item;
-		ReadConditionTree(pFile, rootCondition);
+		ReadConditionTree(ifs, rootCondition);
 
 		// Reading operation data
-		fread(&n, sizeof(int32_t), 1, pFile);
+		ifs.read(reinterpret_cast<char*>(&n), sizeof(int32_t));
 		for (int32_t i = 0; i < n; ++i)
 		{
 			_s_operation* pTemp = new _s_operation;
-			fread(&pTemp->iType, sizeof(int32_t), 1, pFile);
+			ifs.read(reinterpret_cast<char*>(&pTemp->iType), sizeof(int32_t));
 			switch ((_e_operation)pTemp->iType)
 			{
 			case _e_operation::o_attack:
 				pTemp->pParam = new O_ATTACK_TYPE;
-				fread(pTemp->pParam, sizeof(O_ATTACK_TYPE), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_ATTACK_TYPE));
 				break;
 			case _e_operation::o_use_skill:
 				pTemp->pParam = new O_USE_SKILL;
-				fread(pTemp->pParam, sizeof(O_USE_SKILL), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_USE_SKILL));
 				break;
 			case _e_operation::o_talk:
 				pTemp->pParam = new O_TALK_TEXT;
-				fread(&((O_TALK_TEXT*)pTemp->pParam)->uSize, sizeof(uint32_t), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(&((O_TALK_TEXT*)pTemp->pParam)->uSize), sizeof(uint32_t));
 				((O_TALK_TEXT*)pTemp->pParam)->szData = new uint16_t[((O_TALK_TEXT*)pTemp->pParam)->uSize / 2];
-				fread(((O_TALK_TEXT*)pTemp->pParam)->szData, ((O_TALK_TEXT*)pTemp->pParam)->uSize, 1, pFile);
+				ifs.read(reinterpret_cast<char*>(((O_TALK_TEXT*)pTemp->pParam)->szData), ((O_TALK_TEXT*)pTemp->pParam)->uSize);
 				break;
 			case _e_operation::o_run_trigger:
 				pTemp->pParam = new O_RUN_TRIGGER;
-				fread(pTemp->pParam, sizeof(O_RUN_TRIGGER), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_RUN_TRIGGER));
 				break;
 			case _e_operation::o_stop_trigger:
 				pTemp->pParam = new O_STOP_TRIGGER;
-				fread(pTemp->pParam, sizeof(O_STOP_TRIGGER), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_STOP_TRIGGER));
 				break;
 			case _e_operation::o_active_trigger:
 				pTemp->pParam = new O_ACTIVE_TRIGGER;
-				fread(pTemp->pParam, sizeof(O_ACTIVE_TRIGGER), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_ACTIVE_TRIGGER));
 				break;
 			case _e_operation::o_create_timer:
 				pTemp->pParam = new O_CREATE_TIMER;
-				fread(pTemp->pParam, sizeof(O_CREATE_TIMER), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_CREATE_TIMER));
 				break;
 			case _e_operation::o_kill_timer:
 				pTemp->pParam = new O_KILL_TIMER;
-				fread(pTemp->pParam, sizeof(O_KILL_TIMER), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_KILL_TIMER));
 				break;
 			case _e_operation::o_active_controller:
 				pTemp->pParam = new O_ACTIVE_CONTROLLER;
-				fread(&((O_ACTIVE_CONTROLLER*)pTemp->pParam)->uID, sizeof(uint32_t), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(&((O_ACTIVE_CONTROLLER*)pTemp->pParam)->uID), sizeof(uint32_t));
 				((O_ACTIVE_CONTROLLER*)pTemp->pParam)->bStop = false;
 				break;
 			case _e_operation::o_summon:
 				pTemp->pParam = new O_SUMMON;
-				fread(pTemp->pParam, sizeof(O_SUMMON), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_SUMMON));
 				break;
 			case _e_operation::o_use_range_skill:
 				pTemp->pParam = new O_USE_RANGE_SKILL;
-				fread(pTemp->pParam, sizeof(O_USE_RANGE_SKILL), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_USE_RANGE_SKILL));
 				break;
 			default:
 				pTemp->pParam = 0;
 			}
 
-			fread(&pTemp->mTarget.iType, sizeof(int32_t), 1, pFile);
+			ifs.read(reinterpret_cast<char*>(&pTemp->mTarget.iType), sizeof(int32_t));
 			switch ((_e_target)pTemp->mTarget.iType)
 			{
 			case _e_target::t_occupation_list:
 				pTemp->mTarget.pParam = new T_OCCUPATION;
-				fread(pTemp->mTarget.pParam, sizeof(T_OCCUPATION), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->mTarget.pParam), sizeof(T_OCCUPATION));
 				break;
 			default:
 				pTemp->mTarget.pParam = nullptr;
@@ -119,150 +121,151 @@ bool CTriggerData::Load(FILE* pFile)
 	}
 	else if (dwVersion >= 1)
 	{
-		fread(&uID, sizeof(uint32_t), 1, pFile);
-		fread(&bActive, sizeof(bool), 1, pFile);
-		fread(&bRun, sizeof(bool), 1, pFile);
-		fread(&runCondition, sizeof(char), 1, pFile);
-		fread(szName, sizeof(char) * 128, 1, pFile);
+		ifs.read(reinterpret_cast<char*>(&uID), sizeof(uint32_t));
+		ifs.read(reinterpret_cast<char*>(&bActive), sizeof(bool));
+		ifs.read(reinterpret_cast<char*>(&bRun), sizeof(bool));
+		ifs.read(reinterpret_cast<char*>(&runCondition), sizeof(char));
+		ifs.read(szName, sizeof(char) * 128);
 
 		int32_t n = 0;
 
 		// Reading condition data
 		rootCondition = new _s_tree_item;
-		ReadConditionTree(pFile, rootCondition);
+		ReadConditionTree(ifs, rootCondition);
 
 		// Reading operation data
-		fread(&n, sizeof(int32_t), 1, pFile);
+		ifs.read(reinterpret_cast<char*>(&n), sizeof(int32_t));
 		for (int32_t i = 0; i < n; ++i)
 		{
 			_s_operation* pTemp = new _s_operation;
-			fread(&pTemp->iType, sizeof(int32_t), 1, pFile);
+			ifs.read(reinterpret_cast<char*>(&pTemp->iType), sizeof(int32_t));
 			switch ((_e_operation)pTemp->iType)
 			{
 			case _e_operation::o_attack:
 				pTemp->pParam = new O_ATTACK_TYPE;
-				fread(pTemp->pParam, sizeof(O_ATTACK_TYPE), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_ATTACK_TYPE));
 				break;
 			case _e_operation::o_use_skill:
 				pTemp->pParam = new O_USE_SKILL;
-				fread(pTemp->pParam, sizeof(O_USE_SKILL), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_USE_SKILL));
 				break;
 			case _e_operation::o_talk:
 				pTemp->pParam = new O_TALK_TEXT;
-				fread(&((O_TALK_TEXT*)pTemp->pParam)->uSize, sizeof(uint32_t), 1, pFile);
-				((O_TALK_TEXT*)pTemp->pParam)->szData = new uint16_t[((O_TALK_TEXT*)pTemp->pParam)->uSize / 2 + 1];
-				fread(((O_TALK_TEXT*)pTemp->pParam)->szData, ((O_TALK_TEXT*)pTemp->pParam)->uSize, 1, pFile);
+				ifs.read(reinterpret_cast<char*>(&((O_TALK_TEXT*)pTemp->pParam)->uSize), sizeof(uint32_t));
+				((O_TALK_TEXT*)pTemp->pParam)->szData = new uint16_t[((O_TALK_TEXT*)pTemp->pParam)->uSize / 2];
+				ifs.read(reinterpret_cast<char*>(((O_TALK_TEXT*)pTemp->pParam)->szData), ((O_TALK_TEXT*)pTemp->pParam)->uSize);
 				((O_TALK_TEXT*)pTemp->pParam)->szData[((O_TALK_TEXT*)pTemp->pParam)->uSize / 2] = 0;
 				break;
 			case _e_operation::o_run_trigger:
 				pTemp->pParam = new O_RUN_TRIGGER;
-				fread(pTemp->pParam, sizeof(O_RUN_TRIGGER), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_RUN_TRIGGER));
 				break;
 			case _e_operation::o_stop_trigger:
 				pTemp->pParam = new O_STOP_TRIGGER;
-				fread(pTemp->pParam, sizeof(O_STOP_TRIGGER), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_STOP_TRIGGER));
 				break;
 			case _e_operation::o_active_trigger:
 				pTemp->pParam = new O_ACTIVE_TRIGGER;
-				fread(pTemp->pParam, sizeof(O_ACTIVE_TRIGGER), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_ACTIVE_TRIGGER));
 				break;
 			case _e_operation::o_create_timer:
 				pTemp->pParam = new O_CREATE_TIMER;
-				fread(pTemp->pParam, sizeof(O_CREATE_TIMER), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_CREATE_TIMER));
 				break;
 			case _e_operation::o_kill_timer:
 				pTemp->pParam = new O_KILL_TIMER;
-				fread(pTemp->pParam, sizeof(O_KILL_TIMER), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_KILL_TIMER));
 				break;
 			case _e_operation::o_active_controller:
 				pTemp->pParam = new O_ACTIVE_CONTROLLER;
-				fread(pTemp->pParam, sizeof(O_ACTIVE_CONTROLLER), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_ACTIVE_CONTROLLER));
 				break;
 			case _e_operation::o_summon:
 				pTemp->pParam = new O_SUMMON;
-				fread(pTemp->pParam, sizeof(O_SUMMON), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_SUMMON));
 				break;
 			case _e_operation::o_trigger_task:
 				pTemp->pParam = new O_TRIGGER_TASK;
-				fread(pTemp->pParam, sizeof(O_TRIGGER_TASK), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_TRIGGER_TASK));
 				break;
 			case _e_operation::o_change_path:
 				pTemp->pParam = new O_CHANGE_PATH;
 				if (dwVersion < 9)
 				{
-					fread(pTemp->pParam, sizeof(O_CHANGE_PATH_VERSION8), 1, pFile);
+					ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_CHANGE_PATH_VERSION8));
 					((O_CHANGE_PATH*)(pTemp->pParam))->iType = 0;
 				}
-				else fread(pTemp->pParam, sizeof(O_CHANGE_PATH), 1, pFile);
+				else
+					ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_CHANGE_PATH));
 				break;
 			case _e_operation::o_sneer_monster:
 				pTemp->pParam = new O_SNEER_MONSTER;
-				fread(pTemp->pParam, sizeof(O_SNEER_MONSTER), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_SNEER_MONSTER));
 				break;
 			case _e_operation::o_use_range_skill:
 				pTemp->pParam = new O_USE_RANGE_SKILL;
-				fread(pTemp->pParam, sizeof(O_USE_RANGE_SKILL), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_USE_RANGE_SKILL));
 				break;
 			case _e_operation::o_set_global:
 				pTemp->pParam = new O_SET_GLOBAL;
-				fread(pTemp->pParam, sizeof(O_SET_GLOBAL), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_SET_GLOBAL));
 				break;
 			case _e_operation::o_revise_global:
 				pTemp->pParam = new O_REVISE_GLOBAL;
-				fread(pTemp->pParam, sizeof(O_REVISE_GLOBAL), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_REVISE_GLOBAL));
 				break;
 			case _e_operation::o_assign_global:
 				pTemp->pParam = new O_ASSIGN_GLOBAL;
-				fread(pTemp->pParam, sizeof(O_ASSIGN_GLOBAL), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_ASSIGN_GLOBAL));
 				break;
 			case _e_operation::o_summon_mineral:
 				pTemp->pParam = new O_SUMMON_MINERAL;
-				fread(pTemp->pParam, sizeof(O_SUMMON_MINERAL), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_SUMMON_MINERAL));
 				break;
 			case _e_operation::o_drop_item:
 				pTemp->pParam = new O_DROP_ITEM;
-				fread(pTemp->pParam, sizeof(O_DROP_ITEM), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_DROP_ITEM));
 				break;
 			case _e_operation::o_change_hate:
 				pTemp->pParam = new O_CHANGE_HATE;
-				fread(pTemp->pParam, sizeof(O_CHANGE_HATE), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_CHANGE_HATE));
 				break;
 			case _e_operation::o_start_event:
 				pTemp->pParam = new O_START_EVENT;
-				fread(pTemp->pParam, sizeof(O_START_EVENT), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_START_EVENT));
 				break;
 			case _e_operation::o_stop_event:
 				pTemp->pParam = new O_STOP_EVENT;
-				fread(pTemp->pParam, sizeof(O_STOP_EVENT), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_STOP_EVENT));
 				break;
 			case _e_operation::o_drop_item_new:
 				pTemp->pParam = new O_DROP_ITEMNEW;
-				fread(pTemp->pParam, sizeof(O_DROP_ITEMNEW), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->pParam), sizeof(O_DROP_ITEMNEW));
 				break;
 			case _e_operation::o_whisper:
 				pTemp->pParam = new O_WHISPER_TEXT;
-				fread(&((O_WHISPER_TEXT*)pTemp->pParam)->uSize, sizeof(uint32_t), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(&((O_WHISPER_TEXT*)pTemp->pParam)->uSize), sizeof(uint32_t));
 				((O_WHISPER_TEXT*)pTemp->pParam)->szData = new uint16_t[((O_WHISPER_TEXT*)pTemp->pParam)->uSize / 2 + 1];
-				fread(((O_WHISPER_TEXT*)pTemp->pParam)->szData, ((O_WHISPER_TEXT*)pTemp->pParam)->uSize, 1, pFile);
+				ifs.read(reinterpret_cast<char*>(((O_WHISPER_TEXT*)pTemp->pParam)->szData), ((O_WHISPER_TEXT*)pTemp->pParam)->uSize);
 				((O_WHISPER_TEXT*)pTemp->pParam)->szData[((O_WHISPER_TEXT*)pTemp->pParam)->uSize / 2] = 0;
 				break;
 			case _e_operation::o_talk_portrait:
 				pTemp->pParam = new O_TALK_PORTRAIT;
-				fread(&((O_TALK_PORTRAIT*)pTemp->pParam)->uSize, sizeof(uint32_t), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(&((O_TALK_PORTRAIT*)pTemp->pParam)->uSize), sizeof(uint32_t));
 				((O_TALK_PORTRAIT*)pTemp->pParam)->szData = new uint16_t[((O_TALK_PORTRAIT*)pTemp->pParam)->uSize / 2 + 1];
-				fread(((O_TALK_PORTRAIT*)pTemp->pParam)->szData, ((O_TALK_PORTRAIT*)pTemp->pParam)->uSize, 1, pFile);
+				ifs.read(reinterpret_cast<char*>(((O_TALK_PORTRAIT*)pTemp->pParam)->szData), ((O_TALK_PORTRAIT*)pTemp->pParam)->uSize);
 				((O_TALK_PORTRAIT*)pTemp->pParam)->szData[((O_TALK_PORTRAIT*)pTemp->pParam)->uSize / 2] = 0;
 				break;
 			default:
 				pTemp->pParam = 0;
 			}
 
-			fread(&pTemp->mTarget.iType, sizeof(int32_t), 1, pFile);
+			ifs.read(reinterpret_cast<char*>(pTemp->mTarget.pParam), sizeof(int32_t));
 			switch ((_e_target)pTemp->mTarget.iType)
 			{
 			case _e_target::t_occupation_list:
 				pTemp->mTarget.pParam = new T_OCCUPATION;
-				fread(pTemp->mTarget.pParam, sizeof(T_OCCUPATION), 1, pFile);
+				ifs.read(reinterpret_cast<char*>(pTemp->mTarget.pParam), sizeof(T_OCCUPATION));
 				break;
 			default:
 				pTemp->mTarget.pParam = nullptr;
@@ -275,117 +278,131 @@ bool CTriggerData::Load(FILE* pFile)
 	return true;
 }
 
-bool CTriggerData::Save(FILE* pFile)
+bool CTriggerData::Save(std::ofstream& ofs)
 {
 	uint32_t dwVersion = F_TRIGGER_VERSION;
-	fwrite(&dwVersion, sizeof(uint32_t), 1, pFile);
-	fwrite(&uID, sizeof(uint32_t), 1, pFile);
-	fwrite(&bActive, sizeof(bool), 1, pFile);
-	fwrite(&bRun, sizeof(bool), 1, pFile);
-	fwrite(&runCondition, sizeof(char), 1, pFile);
-	fwrite(szName, sizeof(char) * 128, 1, pFile);
+	ofs.write(reinterpret_cast<const char*>(&dwVersion), sizeof(uint32_t));
+	ofs.write(reinterpret_cast<const char*>(&uID), sizeof(uint32_t));
+	ofs.write(reinterpret_cast<const char*>(&bActive), sizeof(bool));
+	ofs.write(reinterpret_cast<const char*>(&bRun), sizeof(bool));
+	ofs.write(reinterpret_cast<const char*>(&runCondition), sizeof(char));
+	ofs.write(szName, sizeof(char) * 128);
 
 	size_t n;
 
 	// Writing condition data(tree)
-	SaveConditionTree(pFile, rootCondition);
+	SaveConditionTree(ofs, rootCondition);
 
 	// Writing operation data
 	n = listOperation.size();
-	fwrite(&n, sizeof(int32_t), 1, pFile);
+	ofs.write(reinterpret_cast<const char*>(&n), sizeof(int32_t));
 	for (size_t i = 0; i < n; ++i)
 	{
+		uint32_t dataSize = 0;
 		_s_operation* pTemp = (_s_operation*)listOperation[i];
-		fwrite(&pTemp->iType, sizeof(int32_t), 1, pFile);
+		ofs.write(reinterpret_cast<const char*>(&pTemp->iType), sizeof(int32_t));
 		switch ((_e_operation)pTemp->iType)
 		{
 		case _e_operation::o_attack:
-			fwrite(pTemp->pParam, sizeof(O_ATTACK_TYPE), 1, pFile);
+			ofs.write(reinterpret_cast<const char*>(pTemp->pParam), sizeof(O_ATTACK_TYPE));
 			break;
 		case _e_operation::o_use_skill:
-			fwrite(pTemp->pParam, sizeof(O_USE_SKILL), 1, pFile);
-			break;
-		case _e_operation::o_use_range_skill:
-			fwrite(pTemp->pParam, sizeof(O_USE_RANGE_SKILL), 1, pFile);
+			ofs.write(reinterpret_cast<const char*>(pTemp->pParam), sizeof(O_USE_SKILL));
 			break;
 		case _e_operation::o_talk:
-			fwrite(&((O_TALK_TEXT*)pTemp->pParam)->uSize, sizeof(uint32_t), 1, pFile);
-			fwrite(((O_TALK_TEXT*)pTemp->pParam)->szData, ((O_TALK_TEXT*)pTemp->pParam)->uSize, 1, pFile);
+			dataSize = ((O_TALK_TEXT*)pTemp->pParam)->uSize;
+			ofs.write(reinterpret_cast<const char*>(&((O_TALK_TEXT*)pTemp->pParam)->uSize), sizeof(uint32_t));
+			ofs.write(reinterpret_cast<const char*>(((O_TALK_TEXT*)pTemp->pParam)->szData), ((O_TALK_TEXT*)pTemp->pParam)->uSize);
 			break;
 		case _e_operation::o_reset_hate_list:
 			break;
 		case _e_operation::o_run_trigger:
-			fwrite(pTemp->pParam, sizeof(O_RUN_TRIGGER), 1, pFile);
+			ofs.write(reinterpret_cast<const char*>(pTemp->pParam), sizeof(O_RUN_TRIGGER));
 			break;
 		case _e_operation::o_stop_trigger:
-			fwrite(pTemp->pParam, sizeof(O_STOP_TRIGGER), 1, pFile);
+			ofs.write(reinterpret_cast<const char*>(pTemp->pParam), sizeof(O_STOP_TRIGGER));
 			break;
 		case _e_operation::o_active_trigger:
-			fwrite(pTemp->pParam, sizeof(O_ACTIVE_TRIGGER), 1, pFile);
+			ofs.write(reinterpret_cast<const char*>(pTemp->pParam), sizeof(O_ACTIVE_TRIGGER));
 			break;
 		case _e_operation::o_create_timer:
-			fwrite(pTemp->pParam, sizeof(O_CREATE_TIMER), 1, pFile);
+			ofs.write(reinterpret_cast<const char*>(pTemp->pParam), sizeof(O_CREATE_TIMER));
 			break;
 		case _e_operation::o_kill_timer:
-			fwrite(pTemp->pParam, sizeof(O_KILL_TIMER), 1, pFile);
+			ofs.write(reinterpret_cast<const char*>(pTemp->pParam), sizeof(O_KILL_TIMER));
+			break;
+		case _e_operation::o_flee:
+		case _e_operation::o_set_hate_to_first:
+		case _e_operation::o_set_hate_to_last:
+		case _e_operation::o_set_hate_fifty_percent:
+		case _e_operation::o_skip_operation:
 			break;
 		case _e_operation::o_active_controller:
-			fwrite(pTemp->pParam, sizeof(O_ACTIVE_CONTROLLER), 1, pFile);
+			ofs.write(reinterpret_cast<const char*>(pTemp->pParam), sizeof(O_ACTIVE_CONTROLLER));
 			break;
 		case _e_operation::o_summon:
-			fwrite(pTemp->pParam, sizeof(O_SUMMON), 1, pFile);
+			ofs.write(reinterpret_cast<const char*>(pTemp->pParam), sizeof(O_SUMMON));
 			break;
 		case _e_operation::o_trigger_task:
-			fwrite(pTemp->pParam, sizeof(O_TRIGGER_TASK), 1, pFile);
+			ofs.write(reinterpret_cast<const char*>(pTemp->pParam), sizeof(O_TRIGGER_TASK));
 			break;
 		case _e_operation::o_change_path:
-			fwrite(pTemp->pParam, sizeof(O_CHANGE_PATH), 1, pFile);
+			ofs.write(reinterpret_cast<const char*>(pTemp->pParam), sizeof(O_CHANGE_PATH));
+			break;
+		case _e_operation::o_disappear:
 			break;
 		case _e_operation::o_sneer_monster:
-			fwrite(pTemp->pParam, sizeof(O_SNEER_MONSTER), 1, pFile);
+			ofs.write(reinterpret_cast<const char*>(pTemp->pParam), sizeof(O_SNEER_MONSTER));
+			break;
+		case _e_operation::o_use_range_skill:
+			ofs.write(reinterpret_cast<const char*>(pTemp->pParam), sizeof(O_USE_RANGE_SKILL));
+			break;
+		case _e_operation::o_reset:
 			break;
 		case _e_operation::o_set_global:
-			fwrite(pTemp->pParam, sizeof(O_SET_GLOBAL), 1, pFile);
+			ofs.write(reinterpret_cast<const char*>(pTemp->pParam), sizeof(O_SET_GLOBAL));
 			break;
 		case _e_operation::o_revise_global:
-			fwrite(pTemp->pParam, sizeof(O_REVISE_GLOBAL), 1, pFile);
+			ofs.write(reinterpret_cast<const char*>(pTemp->pParam), sizeof(O_REVISE_GLOBAL));
 			break;
 		case _e_operation::o_assign_global:
-			fwrite(pTemp->pParam, sizeof(O_ASSIGN_GLOBAL), 1, pFile);
+			ofs.write(reinterpret_cast<const char*>(pTemp->pParam), sizeof(O_ASSIGN_GLOBAL));
 			break;
 		case _e_operation::o_summon_mineral:
-			fwrite(pTemp->pParam, sizeof(O_SUMMON_MINERAL), 1, pFile);
+			ofs.write(reinterpret_cast<const char*>(pTemp->pParam), sizeof(O_SUMMON_MINERAL));
 			break;
 		case _e_operation::o_drop_item:
-			fwrite(pTemp->pParam, sizeof(O_DROP_ITEM), 1, pFile);
+			ofs.write(reinterpret_cast<const char*>(pTemp->pParam), sizeof(O_DROP_ITEM));
 			break;
 		case _e_operation::o_change_hate:
-			fwrite(pTemp->pParam, sizeof(O_CHANGE_HATE), 1, pFile);
+			ofs.write(reinterpret_cast<const char*>(pTemp->pParam), sizeof(O_CHANGE_HATE));
 			break;
 		case _e_operation::o_start_event:
-			fwrite(pTemp->pParam, sizeof(O_START_EVENT), 1, pFile);
+			ofs.write(reinterpret_cast<const char*>(pTemp->pParam), sizeof(O_START_EVENT));
 			break;
 		case _e_operation::o_stop_event:
-			fwrite(pTemp->pParam, sizeof(O_STOP_EVENT), 1, pFile);
+			ofs.write(reinterpret_cast<const char*>(pTemp->pParam), sizeof(O_STOP_EVENT));
 			break;
 		case _e_operation::o_drop_item_new:
-			fwrite(pTemp->pParam, sizeof(O_DROP_ITEMNEW), 1, pFile);
+			ofs.write(reinterpret_cast<const char*>(pTemp->pParam), sizeof(O_DROP_ITEMNEW));
 			break;
 		case _e_operation::o_whisper:
-			fwrite(&((O_WHISPER_TEXT*)pTemp->pParam)->uSize, sizeof(uint32_t), 1, pFile);
-			fwrite(((O_WHISPER_TEXT*)pTemp->pParam)->szData, ((O_WHISPER_TEXT*)pTemp->pParam)->uSize, 1, pFile);
+			dataSize = ((O_WHISPER_TEXT*)pTemp->pParam)->uSize;
+			ofs.write(reinterpret_cast<const char*>(&dataSize), sizeof(uint32_t));
+			ofs.write(reinterpret_cast<const char*>(((O_WHISPER_TEXT*)pTemp->pParam)->szData), dataSize * sizeof(uint16_t));
 			break;
 		case _e_operation::o_talk_portrait:
-			fwrite(&((O_TALK_PORTRAIT*)pTemp->pParam)->uSize, sizeof(uint32_t), 1, pFile);
-			fwrite(((O_TALK_PORTRAIT*)pTemp->pParam)->szData, ((O_TALK_PORTRAIT*)pTemp->pParam)->uSize, 1, pFile);
+			dataSize = ((O_TALK_PORTRAIT*)pTemp->pParam)->uSize;
+			ofs.write(reinterpret_cast<const char*>(&dataSize), sizeof(uint32_t));
+			ofs.write(reinterpret_cast<const char*>(((O_TALK_PORTRAIT*)pTemp->pParam)->szData), dataSize * sizeof(uint16_t));
 			break;
 		}
 
-		fwrite(&pTemp->mTarget.iType, sizeof(int32_t), 1, pFile);
+		ofs.write(reinterpret_cast<const char*>(pTemp->pParam), sizeof(int32_t));
 		switch ((_e_target)pTemp->mTarget.iType)
 		{
 		case _e_target::t_occupation_list:
-			fwrite(pTemp->mTarget.pParam, sizeof(T_OCCUPATION), 1, pFile);
+			ofs.write(reinterpret_cast<const char*>(pTemp->pParam), sizeof(T_OCCUPATION));
 			break;
 		}
 	}
@@ -766,27 +783,27 @@ void CTriggerData::DelOperation(uint32_t idx)
 	listOperation.erase(listOperation.begin() + idx);
 }
 
-bool CTriggerData::ReadConditionTree(FILE* pFile, _s_tree_item* pNode)
+bool CTriggerData::ReadConditionTree(std::ifstream& ifs, _s_tree_item* pNode)
 {
 	if (pNode == nullptr)
 		return true;
 
 	int32_t dat_size = 0;
 	int32_t flag = 0;
-	fread(&pNode->mCondition.iType, sizeof(int32_t), 1, pFile);
-	fread(&dat_size, sizeof(int32_t), 1, pFile);
+	ifs.read(reinterpret_cast<char*>(&pNode->mCondition.iType), sizeof(int32_t));
+	ifs.read(reinterpret_cast<char*>(&dat_size), sizeof(int32_t));
 
 	if (dat_size != 0)
 	{
 		pNode->mCondition.pParam = new char[dat_size];
-		fread(pNode->mCondition.pParam, dat_size, 1, pFile);
+		ifs.read(reinterpret_cast<char*>(pNode->mCondition.pParam), dat_size);
 	}
 	else
 		pNode->mCondition.pParam = nullptr;
 
 	while (true)
 	{
-		fread(&flag, sizeof(int32_t), 1, pFile);
+		ifs.read(reinterpret_cast<char*>(&flag), sizeof(int32_t));
 		if (flag == CONDITION_LEAF)
 		{
 			pNode->pLeft = nullptr;
@@ -796,12 +813,12 @@ bool CTriggerData::ReadConditionTree(FILE* pFile, _s_tree_item* pNode)
 		else if (flag == CONDITION_LEFT_SUB)
 		{
 			pNode->pLeft = new _s_tree_item;
-			ReadConditionTree(pFile, pNode->pLeft);
+			ReadConditionTree(ifs, pNode->pLeft);
 		}
 		else if (flag == CONDITION_RIGHT_SUB)
 		{
 			pNode->pRight = new _s_tree_item;
-			ReadConditionTree(pFile, pNode->pRight);
+			ReadConditionTree(ifs, pNode->pRight);
 		}
 		else if (flag == CONDITION_NODE_END)
 			break;
@@ -810,17 +827,17 @@ bool CTriggerData::ReadConditionTree(FILE* pFile, _s_tree_item* pNode)
 	return true;
 }
 
-bool CTriggerData::SaveConditionTree(FILE* pFile, const _s_tree_item* pNode)
+bool CTriggerData::SaveConditionTree(std::ofstream& ofs, const _s_tree_item* pNode)
 {
 	if (pNode == nullptr)
 		return true;
 
 	int32_t dat_size = 0;
 	int32_t flag = 0;
-	fwrite(&pNode->mCondition.iType, sizeof(int32_t), 1, pFile);
+	ofs.write(reinterpret_cast<const char*>(&pNode->mCondition.iType), sizeof(int32_t));
 
 	if (pNode->mCondition.pParam == nullptr)
-		fwrite(&dat_size, sizeof(int32_t), 1, pFile);
+		ofs.write(reinterpret_cast<const char*>(&dat_size), sizeof(int32_t));
 	else
 	{
 		switch ((_e_condition)pNode->mCondition.iType)
@@ -862,33 +879,33 @@ bool CTriggerData::SaveConditionTree(FILE* pFile, const _s_tree_item* pNode)
 			break;
 		}
 
-		fwrite(&dat_size, sizeof(int32_t), 1, pFile);
-		fwrite(pNode->mCondition.pParam, dat_size, 1, pFile);
+		ofs.write(reinterpret_cast<const char*>(&dat_size), sizeof(int32_t));
+		ofs.write(reinterpret_cast<const char*>(pNode->mCondition.pParam), dat_size);
 	}
 
 	if (pNode->pLeft == nullptr && pNode->pRight == nullptr)
 	{
 		flag = CONDITION_LEAF;
-		fwrite(&flag, sizeof(int32_t), 1, pFile);
+		ofs.write(reinterpret_cast<const char*>(&flag), sizeof(int32_t));
 		return true;
 	}
 
 	if (pNode->pLeft)
 	{
 		flag = CONDITION_LEFT_SUB;
-		fwrite(&flag, sizeof(int32_t), 1, pFile);
-		SaveConditionTree(pFile, pNode->pLeft);
+		ofs.write(reinterpret_cast<const char*>(&flag), sizeof(int32_t));
+		SaveConditionTree(ofs, pNode->pLeft);
 	}
 
 	if (pNode->pRight)
 	{
 		flag = CONDITION_RIGHT_SUB;
-		fwrite(&flag, sizeof(int32_t), 1, pFile);
-		SaveConditionTree(pFile, pNode->pRight);
+		ofs.write(reinterpret_cast<const char*>(&flag), sizeof(int32_t));
+		SaveConditionTree(ofs, pNode->pRight);
 	}
 
 	flag = CONDITION_NODE_END;
-	fwrite(&flag, sizeof(int32_t), 1, pFile);
+	ofs.write(reinterpret_cast<const char*>(&flag), sizeof(int32_t));
 
 	return true;
 }
@@ -900,20 +917,14 @@ CPolicyData::~CPolicyData() {}
 
 bool CPolicyData::Load(const char* path)
 {
-	FILE* pFile = fopen(path, "rb");
-	if (pFile == nullptr)
-		return false;
-
-	return Load(pFile);
+	std::ifstream ifs(path, std::ios::binary);
+	return ifs.is_open() ? Load(ifs) : false;
 }
 
 bool CPolicyData::Load(const wchar_t* path)
 {
-	FILE* pFile = _wfopen(path, L"rb");
-	if (pFile == nullptr)
-		return false;
-
-	return Load(pFile);
+	std::ifstream ifs(path, std::ios::binary);
+	return ifs.is_open() ? Load(ifs) : false;
 }
 
 bool CPolicyData::Load(const std::string& path)
@@ -928,20 +939,20 @@ bool CPolicyData::Load(const std::wstring& path)
 
 bool CPolicyData::Save(const char* path)
 {
-	FILE* pFile = fopen(path, "wb");
-	if (pFile == nullptr)
+	std::ofstream ofs(path, std::ios::binary);
+	if (!ofs.is_open())
 		return false;
 
-	return Save(pFile);
+	return Save(ofs);
 }
 
 bool CPolicyData::Save(const wchar_t* path)
 {
-	FILE* pFile = _wfopen(path, L"wb");
-	if (pFile == nullptr)
+	std::ofstream ofs(path, std::ios::binary);
+	if (!ofs.is_open())
 		return false;
 
-	return Save(pFile);
+	return Save(ofs);
 }
 
 bool CPolicyData::Save(const std::string& path)
@@ -954,21 +965,21 @@ bool CPolicyData::Save(const std::wstring& path)
 	return Save(path.c_str());
 }
 
-bool CPolicyData::Load(FILE* pFile)
+bool CPolicyData::Load(std::ifstream& ifs)
 {
 	uint32_t nVersion;
-	fread(&nVersion, sizeof(uint32_t), 1, pFile);
+	ifs.read(reinterpret_cast<char*>(&nVersion), sizeof(uint32_t));
 
 	if (nVersion == F_POLICY_VERSION)
 	{
 		int32_t n = 0;
-		fread(&uID, sizeof(uint32_t), 1, pFile);
-		fread(&n, sizeof(int32_t), 1, pFile);
+		ifs.read(reinterpret_cast<char*>(&uID), sizeof(uint32_t));
+		ifs.read(reinterpret_cast<char*>(&n), sizeof(int32_t));
 
 		for (int32_t i = 0; i < n; i++)
 		{
 			CTriggerData* pNew = new CTriggerData;
-			pNew->Load(pFile);
+			pNew->Load(ifs);
 			listTriggerPtr.push_back(pNew);
 		}
 	}
@@ -978,18 +989,18 @@ bool CPolicyData::Load(FILE* pFile)
 	return true;
 }
 
-bool CPolicyData::Save(FILE* pFile)
+bool CPolicyData::Save(std::ofstream& ofs)
 {
 	uint32_t nVersion = F_POLICY_VERSION;
-	fwrite(&nVersion, sizeof(uint32_t), 1, pFile);
-	fwrite(&uID, sizeof(uint32_t), 1, pFile);
+	ofs.write(reinterpret_cast<const char*>(&nVersion), sizeof(uint32_t));
+	ofs.write(reinterpret_cast<const char*>(&uID), sizeof(uint32_t));
 	size_t n = listTriggerPtr.size();
-	fwrite(&n, sizeof(int32_t), 1, pFile);
+	ofs.write(reinterpret_cast<const char*>(&n), sizeof(int32_t));
 
 	for (size_t i = 0; i < n; i++)
-		listTriggerPtr[i]->Save(pFile);
+		listTriggerPtr[i]->Save(ofs);
 
-	fclose(pFile);
+	ofs.close();
 	return true;
 }
 
@@ -1038,29 +1049,29 @@ CPolicyDataManager::~CPolicyDataManager() {}
 
 bool CPolicyDataManager::Load(const char* path)
 {
-	FILE* pFile = fopen(path, "rb");
+	std::ifstream ifs(path, std::ios::binary);
 
-	if (pFile == nullptr)
+	if (!ifs.is_open())
 		return false;
 
 	uint32_t version;
 	int32_t count;
-	fread(&version, sizeof(uint32_t), 1, pFile);
+	ifs.read(reinterpret_cast<char*>(&version), sizeof(uint32_t));
 
 	if (version != F_POLICY_EXP_VERSION)
 	{
-		fclose(pFile);
+		ifs.close();
 		return false;
 	}
 
-	fread(&count, sizeof(int32_t), 1, pFile);
+	ifs.read(reinterpret_cast<char*>(&count), sizeof(int32_t));
 	for (int32_t i = 0; i < count; ++i)
 	{
 		CPolicyData* pNew = new CPolicyData;
 
-		if (pNew == 0 || !pNew->Load(pFile))
+		if (pNew == 0 || !pNew->Load(ifs))
 		{
-			fclose(pFile);
+			ifs.close();
 			count = (int32_t)listPolicy.size();
 
 			for (int32_t k = 0; k < count; ++k)
@@ -1077,35 +1088,35 @@ bool CPolicyDataManager::Load(const char* path)
 		listPolicy.push_back(pNew);
 	}
 
-	fclose(pFile);
+	ifs.close();
 	return true;
 }
 
 bool CPolicyDataManager::Load(const wchar_t* path)
 {
-	FILE* pFile = _wfopen(path, L"rb");
+	std::ifstream ifs(path, std::ios::binary);
 
-	if (pFile == nullptr)
+	if (!ifs.is_open())
 		return false;
 
 	uint32_t version;
 	int32_t count;
-	fread(&version, sizeof(uint32_t), 1, pFile);
+	ifs.read(reinterpret_cast<char*>(&version), sizeof(uint32_t));
 
 	if (version != F_POLICY_EXP_VERSION)
 	{
-		fclose(pFile);
+		ifs.close();
 		return false;
 	}
 
-	fread(&count, sizeof(int32_t), 1, pFile);
+	ifs.read(reinterpret_cast<char*>(&count), sizeof(int32_t));
 	for (int32_t i = 0; i < count; ++i)
 	{
 		CPolicyData* pNew = new CPolicyData;
 
-		if (pNew == 0 || !pNew->Load(pFile))
+		if (pNew == 0 || !pNew->Load(ifs))
 		{
-			fclose(pFile);
+			ifs.close();
 			count = (int32_t)listPolicy.size();
 
 			for (int32_t k = 0; k < count; ++k)
@@ -1122,7 +1133,7 @@ bool CPolicyDataManager::Load(const wchar_t* path)
 		listPolicy.push_back(pNew);
 	}
 
-	fclose(pFile);
+	ifs.close();
 	return true;
 }
 
@@ -1138,55 +1149,53 @@ bool CPolicyDataManager::Load(const std::wstring& path)
 
 bool CPolicyDataManager::Save(const char* path)
 {
-	FILE* pFile = fopen(path, "wb");
-
-	if (pFile == nullptr)
+	std::ofstream ofs(path, std::ios::binary);
+	if (!ofs.is_open())
 		return false;
 
 	uint32_t uVersion = F_POLICY_EXP_VERSION;
 	size_t count = listPolicy.size();
-	fwrite(&uVersion, sizeof(uint32_t), 1, pFile);
-	fwrite(&count, sizeof(int32_t), 1, pFile);
+	ofs.write(reinterpret_cast<const char*>(&uVersion), sizeof(uint32_t));
+	ofs.write(reinterpret_cast<const char*>(&count), sizeof(int32_t));
 
 	for (size_t i = 0; i < count; ++i)
 	{
 		CPolicyData* pPolicy = listPolicy[i];
 
-		if (!pPolicy->Save(pFile))
+		if (!pPolicy->Save(ofs))
 		{
-			fclose(pFile);
+			ofs.close();
 			return false;
 		}
 	}
 
-	fclose(pFile);
+	ofs.close();
 	return true;
 }
 
 bool CPolicyDataManager::Save(const wchar_t* path)
 {
-	FILE* pFile = _wfopen(path, L"wb");
-
-	if (pFile == nullptr)
+	std::ofstream ofs(path, std::ios::binary);
+	if (!ofs.is_open())
 		return false;
 
 	uint32_t uVersion = F_POLICY_EXP_VERSION;
 	size_t count = listPolicy.size();
-	fwrite(&uVersion, sizeof(uint32_t), 1, pFile);
-	fwrite(&count, sizeof(int32_t), 1, pFile);
+	ofs.write(reinterpret_cast<const char*>(&uVersion), sizeof(uint32_t));
+	ofs.write(reinterpret_cast<const char*>(&count), sizeof(int32_t));
 
 	for (size_t i = 0; i < count; ++i)
 	{
 		CPolicyData* pPolicy = listPolicy[i];
 
-		if (!pPolicy->Save(pFile))
+		if (!pPolicy->Save(ofs))
 		{
-			fclose(pFile);
+			ofs.close();
 			return false;
 		}
 	}
 
-	fclose(pFile);
+	ofs.close();
 	return true;
 }
 

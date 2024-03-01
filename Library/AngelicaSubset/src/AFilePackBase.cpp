@@ -10,10 +10,10 @@ extern uint32_t AFPCK_GUARDBYTE1;
 extern uint32_t AFPCK_MASKDWORD;
 extern uint32_t AFPCK_CHECKMASK;
 
-static const size_t NET_DISK_RW_MAX_SIZE = 1024 * 1024;
-static const uint32_t IO_TIMEOUT_ERROR_COUNT = 120000;
+static const uint64_t NET_DISK_RW_MAX_SIZE = 1024 * 1024;
+static const uint64_t IO_TIMEOUT_ERROR_COUNT = 120000;
 
-size_t _FileWrite(const void* buffer, const size_t num_byte, std::fstream& stream)
+int64_t _FileWrite(const void* buffer, const int64_t num_byte, std::fstream& stream)
 {
     if (!buffer || !stream)
         return 0;
@@ -26,14 +26,14 @@ size_t _FileWrite(const void* buffer, const size_t num_byte, std::fstream& strea
     }
 
     const char* pBuf = static_cast<const char*>(buffer);
-    size_t sizeMaxOnceWrite = NET_DISK_RW_MAX_SIZE;
-    size_t startTimeCnt = std::chrono::duration_cast<std::chrono::milliseconds>(
+    int64_t sizeMaxOnceWrite = NET_DISK_RW_MAX_SIZE;
+    int64_t startTimeCnt = std::chrono::duration_cast<std::chrono::milliseconds>(
         std::chrono::system_clock::now().time_since_epoch()).count();
 
-    size_t dwOffset = 0;
+    int64_t dwOffset = 0;
     while (dwOffset < num_byte)
     {
-        size_t bytesToWrite = min(num_byte - dwOffset, sizeMaxOnceWrite);
+        int64_t bytesToWrite = min(num_byte - dwOffset, sizeMaxOnceWrite);
         stream.write(pBuf + dwOffset, bytesToWrite);
 
         if (!stream.good())
@@ -63,7 +63,7 @@ size_t _FileWrite(const void* buffer, const size_t num_byte, std::fstream& strea
     return dwOffset;
 }
 
-size_t _FileRead(void* buffer, const size_t num_byte, std::fstream& stream)
+int64_t _FileRead(void* buffer, const int64_t num_byte, std::fstream& stream)
 {
     if (!buffer || !stream)
         return 0;
@@ -76,14 +76,14 @@ size_t _FileRead(void* buffer, const size_t num_byte, std::fstream& stream)
     }
 
     LPBYTE pBuf = static_cast<LPBYTE>(buffer);
-    size_t sizeMaxOnceRead = NET_DISK_RW_MAX_SIZE;
-    size_t startTimeCnt = std::chrono::duration_cast<std::chrono::milliseconds>(
+    int64_t sizeMaxOnceRead = NET_DISK_RW_MAX_SIZE;
+    int64_t startTimeCnt = std::chrono::duration_cast<std::chrono::milliseconds>(
         std::chrono::system_clock::now().time_since_epoch()).count();
 
-    size_t dwOffset = 0;
+    int64_t dwOffset = 0;
     while (dwOffset < num_byte)
     {
-        size_t bytesToRead = min(num_byte - dwOffset, sizeMaxOnceRead);
+        int64_t bytesToRead = min(num_byte - dwOffset, sizeMaxOnceRead);
         stream.read(reinterpret_cast<char*>(pBuf + dwOffset), bytesToRead);
 
         if (!stream.good())
@@ -130,7 +130,7 @@ bool AFilePackBase::CPackageFile::Open(const std::wstring& szFileName, const std
         return false;
 
     m_fileStream1.seekg(0, std::ios_base::end);
-    m_size1 = static_cast<std::streampos>(m_fileStream1.tellg());
+    m_size1 = m_fileStream1.tellg();
     m_fileStream1.seekg(0, std::ios_base::beg);
 
     m_filePos = 0;
@@ -143,7 +143,7 @@ bool AFilePackBase::CPackageFile::Open(const std::wstring& szFileName, const std
     return true;
 }
 
-bool AFilePackBase::CPackageFile::Phase2Open(uint32_t dwOffset)
+bool AFilePackBase::CPackageFile::Phase2Open(int64_t dwOffset)
 {
     if (dwOffset >= MAX_FILE_PACKAGE)
     {
@@ -161,7 +161,7 @@ bool AFilePackBase::CPackageFile::Phase2Open(uint32_t dwOffset)
         }
 
         m_fileStream2.seekg(0, std::ios_base::end);
-        m_size2 = static_cast<std::streampos>(m_fileStream2.tellg());
+        m_size2 = m_fileStream2.tellg();
         m_fileStream2.seekg(0, std::ios_base::beg);
     }
 
@@ -180,9 +180,9 @@ bool AFilePackBase::CPackageFile::Close()
     return true;
 }
 
-size_t AFilePackBase::CPackageFile::read(void* buffer, size_t size, size_t count)
+int64_t AFilePackBase::CPackageFile::read(void* buffer, int64_t size, int64_t count)
 {
-    size_t size_to_read = size * count;
+    int64_t size_to_read = size * count;
     int64_t new_pos = m_filePos + size_to_read;
 
     if (new_pos <= MAX_FILE_PACKAGE)
@@ -190,7 +190,7 @@ size_t AFilePackBase::CPackageFile::read(void* buffer, size_t size, size_t count
         // Completely in file 1
         m_fileStream1.seekg(m_filePos);
         m_fileStream1.read(static_cast<char*>(buffer), size_to_read);
-        size_t readsize = m_fileStream1.gcount();
+        int64_t readsize = m_fileStream1.gcount();
         m_filePos += readsize;
 
         // Reset m_fileStream2's file pointer if necessary
@@ -202,13 +202,13 @@ size_t AFilePackBase::CPackageFile::read(void* buffer, size_t size, size_t count
     else if (m_filePos < MAX_FILE_PACKAGE)
     {
         // Partial in file 1 and partial in file 2
-        size_t size_to_read1 = min(size_to_read, static_cast<size_t>(MAX_FILE_PACKAGE - m_filePos));
-        size_t size_to_read2 = size_to_read - size_to_read1;
+        int64_t size_to_read1 = min(size_to_read, MAX_FILE_PACKAGE - m_filePos);
+        int64_t size_to_read2 = size_to_read - size_to_read1;
 
         // Read from file 1
         m_fileStream1.seekg(m_filePos);
         m_fileStream1.read(static_cast<char*>(buffer), size_to_read1);
-        size_t readsize = m_fileStream1.gcount();
+        int64_t readsize = m_fileStream1.gcount();
         m_filePos += readsize;
 
         // Read from file 2 if necessary
@@ -226,7 +226,7 @@ size_t AFilePackBase::CPackageFile::read(void* buffer, size_t size, size_t count
         // Completely in file 2
         m_fileStream2.seekg(m_filePos - MAX_FILE_PACKAGE);
         m_fileStream2.read(static_cast<char*>(buffer), size_to_read);
-        size_t readsize = m_fileStream2.gcount();
+        int64_t readsize = m_fileStream2.gcount();
         m_filePos += readsize;
         return readsize;
     }
@@ -234,9 +234,9 @@ size_t AFilePackBase::CPackageFile::read(void* buffer, size_t size, size_t count
     return 0;
 }
 
-size_t AFilePackBase::CPackageFile::write(const void* buffer, size_t size, size_t count)
+int64_t AFilePackBase::CPackageFile::write(const void* buffer, int64_t size, int64_t count)
 {
-    size_t size_to_write = size * count;
+    int64_t size_to_write = size * count;
     int64_t new_size = m_filePos + size_to_write;
 
     if (new_size <= MAX_FILE_PACKAGE)
@@ -244,7 +244,7 @@ size_t AFilePackBase::CPackageFile::write(const void* buffer, size_t size, size_
         // Completely in file 1
         m_fileStream1.seekp(m_filePos);
         m_fileStream1.write(static_cast<const char*>(buffer), size_to_write);
-        size_t writesize = m_fileStream1.tellp() - m_filePos;
+        int64_t writesize = m_fileStream1.tellp() - m_filePos;
         m_filePos += writesize;
         if (m_filePos > m_size1)
             m_size1 = m_filePos;
@@ -253,13 +253,13 @@ size_t AFilePackBase::CPackageFile::write(const void* buffer, size_t size, size_
     else if (m_filePos < MAX_FILE_PACKAGE)
     {
         // Partial in file 1 and partial in file 2
-        size_t size_to_write1 = min(size_to_write, static_cast<size_t>(MAX_FILE_PACKAGE - m_filePos));
-        size_t size_to_write2 = size_to_write - size_to_write1;
+        int64_t size_to_write1 = min(size_to_write, MAX_FILE_PACKAGE - m_filePos);
+        int64_t size_to_write2 = size_to_write - size_to_write1;
 
         // Write to file 1
         m_fileStream1.seekp(m_filePos);
         m_fileStream1.write(static_cast<const char*>(buffer), size_to_write1);
-        size_t writesize1 = m_fileStream1.tellp() - m_filePos;
+        int64_t writesize1 = m_fileStream1.tellp() - m_filePos;
         m_filePos += writesize1;
         if (m_filePos > m_size1)
             m_size1 = m_filePos;
@@ -279,7 +279,7 @@ size_t AFilePackBase::CPackageFile::write(const void* buffer, size_t size, size_
         // Write to file 2
         m_fileStream2.seekp(0, std::ios_base::end);
         m_fileStream2.write(static_cast<const char*>(buffer) + size_to_write1, size_to_write2);
-        size_t writesize2 = m_fileStream2.tellp() - m_filePos;
+        int64_t writesize2 = m_fileStream2.tellp() - m_filePos;
         m_filePos += writesize2;
         if (m_filePos > m_size1 + m_size2)
             m_size2 = m_filePos - m_size1;
@@ -295,7 +295,7 @@ size_t AFilePackBase::CPackageFile::write(const void* buffer, size_t size, size_
         }
 
         m_fileStream2.write(static_cast<const char*>(buffer), size_to_write);
-        size_t writesize = m_fileStream2.tellp() - m_filePos;
+        int64_t writesize = m_fileStream2.tellp() - m_filePos;
         m_filePos += writesize;
         if (m_filePos > m_size1 + m_size2)
             m_size2 = m_filePos - m_size1;
@@ -307,7 +307,7 @@ size_t AFilePackBase::CPackageFile::write(const void* buffer, size_t size, size_
 
 std::streampos AFilePackBase::CPackageFile::tell()
 {
-    return (int64_t)m_filePos;
+    return m_filePos;
 }
 
 void AFilePackBase::CPackageFile::seek(int64_t offset, AFILE_SEEK origin)
@@ -333,18 +333,18 @@ void AFilePackBase::CPackageFile::seek(int64_t offset, AFILE_SEEK origin)
 
         if (newpos < m_size1)
         {
-            m_fileStream1.seekg(static_cast<std::streamoff>(newpos), std::ios_base::beg);
+            m_fileStream1.seekg(newpos, std::ios_base::beg);
             m_filePos = m_fileStream1.tellg();
         }
         else
         {
-            m_fileStream2.seekg(static_cast<std::streamoff>(newpos - m_size1), std::ios_base::beg);
+            m_fileStream2.seekg(newpos - m_size1, std::ios_base::beg);
             m_filePos = m_fileStream2.tellg();
         }
     }
     else
     {
-        m_fileStream1.seekg(static_cast<std::streamoff>(offset), static_cast<std::ios_base::seekdir>(origin));
+        m_fileStream1.seekg(offset, origin);
         m_filePos = m_fileStream1.tellg();
     }
 }
