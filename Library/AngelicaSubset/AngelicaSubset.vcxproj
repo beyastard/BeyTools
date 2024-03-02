@@ -185,12 +185,15 @@ xcopy .\include\*.h ..\..\BeyToolsSDK\Library\AngelicaSubset\include\ /Y /D /Q /
     <ClCompile Include="src\AAssist.cpp" />
     <ClCompile Include="src\AFI.cpp" />
     <ClCompile Include="src\AFile.cpp" />
+    <ClCompile Include="src\AFileImage.cpp" />
     <ClCompile Include="src\AFilePackage.cpp" />
     <ClCompile Include="src\AFilePackBase.cpp" />
     <ClCompile Include="src\AFilePackGame.cpp" />
     <ClCompile Include="src\AFilePackMan.cpp" />
     <ClCompile Include="src\ALog.cpp" />
+    <ClCompile Include="src\AScriptFile.cpp" />
     <ClCompile Include="src\AString.cpp" />
+    <ClCompile Include="src\AWScriptFile.cpp" />
     <ClCompile Include="src\AWString.cpp" />
     <ClCompile Include="src\base64.cpp" />
   </ItemGroup>
@@ -202,6 +205,9 @@ xcopy .\include\*.h ..\..\BeyToolsSDK\Library\AngelicaSubset\include\ /Y /D /Q /
     <ClInclude Include="include\A3DVector.h" />
     <ClInclude Include="include\AAssist.h" />
     <ClInclude Include="include\ABaseDef.h" />
+    <ClInclude Include="include\AFileImage.h" />
+    <ClInclude Include="include\AScriptFile.h" />
+    <ClInclude Include="include\AWScriptFile.h" />
     <ClInclude Include="include\MutexGuard.h" />
     <ClInclude Include="include\AFI.h" />
     <ClInclude Include="include\AFile.h" />
