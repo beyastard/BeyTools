@@ -1,12 +1,10 @@
 #ifndef _AFILE_H_
 #define _AFILE_H_
 
-#include "ACSWrapper.h"
-
 #include <fstream>
 
-#define AFILE_TYPE_BINARY 0x42584f4d
-#define AFILE_TYPE_TEXT   0x54584f4d
+#define AFILE_TYPE_BINARY 0x42584f4d // MOXT
+#define AFILE_TYPE_TEXT   0x54584f4d // MOXB
 
 #define AFILE_OPENEXIST   0x00000001
 #define AFILE_CREATENEW   0x00000002
@@ -86,7 +84,6 @@ protected:
 
 private:
     std::fstream m_fileStream;
-    std::mutex m_mutex;
 };
 
 #endif

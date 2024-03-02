@@ -34,8 +34,8 @@ public:
 		bool Phase2Open(int64_t dwOffset);
 		bool Close();
 
-		int64_t read(void* buffer, int64_t size, int64_t count);
-		int64_t write(const void* buffer, int64_t size, int64_t count);
+		size_t read(void* buffer, size_t size, size_t count);
+		size_t write(const void* buffer, size_t size, size_t count);
 		
 		std::streampos tell();
 		void seek(int64_t offset, AFILE_SEEK origin);
@@ -65,7 +65,8 @@ public:
 	virtual const std::wstring& GetFolder() const = 0;
 	virtual bool IsFileExist(const std::wstring& szFileName) = 0;
 
-	virtual void* OpenSharedFile(const std::wstring& szFileName, uint8_t** ppFileBuf, int64_t* pdwFileLen, bool bTempMem) = 0;
+	virtual void* OpenSharedFile(const std::wstring& szFileName, uint8_t** ppFileBuf, size_t* pdwFileLen, bool bTempMem) = 0;
+	virtual void CloseSharedFile(void* dwFileHandle) {}
 };
 
 #endif

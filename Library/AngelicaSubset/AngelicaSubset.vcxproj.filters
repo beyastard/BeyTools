@@ -45,6 +45,15 @@
     <ClCompile Include="src\AFilePackBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\AFilePackage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AFilePackMan.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AFilePackGame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ABaseDef.h">
@@ -80,7 +89,7 @@
     <ClInclude Include="include\AAssist.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\ACSWrapper.h">
+    <ClInclude Include="include\MutexGuard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\ALog.h">
@@ -102,6 +111,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\AFilePackBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AFilePackGame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AFilePackMan.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AFilePackage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

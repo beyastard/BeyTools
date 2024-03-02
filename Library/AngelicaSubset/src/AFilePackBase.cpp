@@ -180,9 +180,9 @@ bool AFilePackBase::CPackageFile::Close()
     return true;
 }
 
-int64_t AFilePackBase::CPackageFile::read(void* buffer, int64_t size, int64_t count)
+size_t AFilePackBase::CPackageFile::read(void* buffer, size_t size, size_t count)
 {
-    int64_t size_to_read = size * count;
+    size_t size_to_read = size * count;
     int64_t new_pos = m_filePos + size_to_read;
 
     if (new_pos <= MAX_FILE_PACKAGE)
@@ -190,7 +190,7 @@ int64_t AFilePackBase::CPackageFile::read(void* buffer, int64_t size, int64_t co
         // Completely in file 1
         m_fileStream1.seekg(m_filePos);
         m_fileStream1.read(static_cast<char*>(buffer), size_to_read);
-        int64_t readsize = m_fileStream1.gcount();
+        size_t readsize = (size_t)m_fileStream1.gcount();
         m_filePos += readsize;
 
         // Reset m_fileStream2's file pointer if necessary
@@ -202,20 +202,20 @@ int64_t AFilePackBase::CPackageFile::read(void* buffer, int64_t size, int64_t co
     else if (m_filePos < MAX_FILE_PACKAGE)
     {
         // Partial in file 1 and partial in file 2
-        int64_t size_to_read1 = min(size_to_read, MAX_FILE_PACKAGE - m_filePos);
-        int64_t size_to_read2 = size_to_read - size_to_read1;
+        size_t size_to_read1 = (size_t)min(size_to_read, MAX_FILE_PACKAGE - (size_t)m_filePos);
+        size_t size_to_read2 = size_to_read - size_to_read1;
 
         // Read from file 1
         m_fileStream1.seekg(m_filePos);
         m_fileStream1.read(static_cast<char*>(buffer), size_to_read1);
-        int64_t readsize = m_fileStream1.gcount();
+        size_t readsize = (size_t)m_fileStream1.gcount();
         m_filePos += readsize;
 
         // Read from file 2 if necessary
         if (m_fileStream2.is_open())
         {
             m_fileStream2.read(static_cast<char*>(buffer) + size_to_read1, size_to_read2);
-            readsize += m_fileStream2.gcount();
+            readsize += (size_t)m_fileStream2.gcount();
         }
 
         m_filePos += size_to_read2; // Increment file position by size_to_read2
@@ -226,7 +226,7 @@ int64_t AFilePackBase::CPackageFile::read(void* buffer, int64_t size, int64_t co
         // Completely in file 2
         m_fileStream2.seekg(m_filePos - MAX_FILE_PACKAGE);
         m_fileStream2.read(static_cast<char*>(buffer), size_to_read);
-        int64_t readsize = m_fileStream2.gcount();
+        size_t readsize = (size_t)m_fileStream2.gcount();
         m_filePos += readsize;
         return readsize;
     }
@@ -234,9 +234,9 @@ int64_t AFilePackBase::CPackageFile::read(void* buffer, int64_t size, int64_t co
     return 0;
 }
 
-int64_t AFilePackBase::CPackageFile::write(const void* buffer, int64_t size, int64_t count)
+size_t AFilePackBase::CPackageFile::write(const void* buffer, size_t size, size_t count)
 {
-    int64_t size_to_write = size * count;
+    size_t size_to_write = size * count;
     int64_t new_size = m_filePos + size_to_write;
 
     if (new_size <= MAX_FILE_PACKAGE)
@@ -244,7 +244,7 @@ int64_t AFilePackBase::CPackageFile::write(const void* buffer, int64_t size, int
         // Completely in file 1
         m_fileStream1.seekp(m_filePos);
         m_fileStream1.write(static_cast<const char*>(buffer), size_to_write);
-        int64_t writesize = m_fileStream1.tellp() - m_filePos;
+        size_t writesize = (size_t)(m_fileStream1.tellp() - m_filePos);
         m_filePos += writesize;
         if (m_filePos > m_size1)
             m_size1 = m_filePos;
@@ -253,13 +253,13 @@ int64_t AFilePackBase::CPackageFile::write(const void* buffer, int64_t size, int
     else if (m_filePos < MAX_FILE_PACKAGE)
     {
         // Partial in file 1 and partial in file 2
-        int64_t size_to_write1 = min(size_to_write, MAX_FILE_PACKAGE - m_filePos);
-        int64_t size_to_write2 = size_to_write - size_to_write1;
+        size_t size_to_write1 = (size_t)min(size_to_write, MAX_FILE_PACKAGE - (size_t)m_filePos);
+        size_t size_to_write2 = size_to_write - size_to_write1;
 
         // Write to file 1
         m_fileStream1.seekp(m_filePos);
         m_fileStream1.write(static_cast<const char*>(buffer), size_to_write1);
-        int64_t writesize1 = m_fileStream1.tellp() - m_filePos;
+        size_t writesize1 = (size_t)(m_fileStream1.tellp() - m_filePos);
         m_filePos += writesize1;
         if (m_filePos > m_size1)
             m_size1 = m_filePos;
@@ -279,7 +279,7 @@ int64_t AFilePackBase::CPackageFile::write(const void* buffer, int64_t size, int
         // Write to file 2
         m_fileStream2.seekp(0, std::ios_base::end);
         m_fileStream2.write(static_cast<const char*>(buffer) + size_to_write1, size_to_write2);
-        int64_t writesize2 = m_fileStream2.tellp() - m_filePos;
+        size_t writesize2 = (size_t)(m_fileStream2.tellp() - m_filePos);
         m_filePos += writesize2;
         if (m_filePos > m_size1 + m_size2)
             m_size2 = m_filePos - m_size1;
@@ -295,7 +295,7 @@ int64_t AFilePackBase::CPackageFile::write(const void* buffer, int64_t size, int
         }
 
         m_fileStream2.write(static_cast<const char*>(buffer), size_to_write);
-        int64_t writesize = m_fileStream2.tellp() - m_filePos;
+        size_t writesize = (size_t)(m_fileStream2.tellp() - m_filePos);
         m_filePos += writesize;
         if (m_filePos > m_size1 + m_size2)
             m_size2 = m_filePos - m_size1;
