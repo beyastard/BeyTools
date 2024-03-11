@@ -1,5 +1,6 @@
 #include "AFI.h"
 #include "ALog.h"
+#include "AFilePackMan.h"
 
 #include <algorithm>
 #include <filesystem>
@@ -215,5 +216,22 @@ bool af_ChangeFileExt(std::wstring& strFileName, const std::wstring& szNewExt)
 
 bool af_IsFileExist(const std::wstring& szFileName)
 {
+    std::wstring szRelativePath;
+    af_GetRelativePath(szFileName, szRelativePath);
+
+    // we must supply a relative path to GetFilePck function
+    AFilePackBase* pPackage = g_AFilePackMan.GetFilePck(szRelativePath, true);
+    if (pPackage)
+    {
+        if (pPackage->IsFileExist(szRelativePath))
+            return true;
+    }
+
+    // not found in package, so test if exist on the disk, here we must use full path
+    std::wstring szFullPath;
+    af_GetFullPath(szFullPath, szFileName);
+    if (INVALID_FILE_ATTRIBUTES != GetFileAttributesW(szFullPath.c_str()))
+        return true;
+
     return false;
 }

@@ -140,5 +140,11 @@
     <ClInclude Include="include\AFileImage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\ARange.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AVertex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

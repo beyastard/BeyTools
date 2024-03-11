@@ -15,6 +15,10 @@
 #include <memory>
 #include <string>
 
+#ifndef CODE_PAGE
+#define CODE_PAGE 54936 // GB18030 (Chinese)
+#endif
+
 #define min2(a, b) (((a) > (b)) ? (b) : (a))
 #define min3(a, b, c) (min2(min2((a), (b)), (c)))
 #define max2(a, b) (((a) > (b)) ? (a) : (b))
