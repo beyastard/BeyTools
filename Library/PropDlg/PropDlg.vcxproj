@@ -60,7 +60,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_WINDOWS;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalIncludeDirectories>../AngelicaSubset/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -78,6 +78,26 @@
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
+    <PostBuildEvent>
+      <Command>if not exist .\include mkdir .\include
+xcopy "AObject.h" ".\include" /R /Y /Q
+xcopy "AProperty.h" ".\include" /R /Y /Q
+xcopy "AVariant.h" ".\include" /R /Y /Q
+xcopy "Convert.h" ".\include" /R /Y /Q
+xcopy "PropertyBooleanBox.h" ".\include" /R /Y /Q
+xcopy "PropertyBox.h" ".\include" /R /Y /Q
+xcopy "PropertyDoubleBox.h" ".\include" /R /Y /Q
+xcopy "PropertyFloatBox.h" ".\include" /R /Y /Q
+xcopy "PropertyIntegerBox.h" ".\include" /R /Y /Q
+xcopy "PropertyInteger64Box.h" ".\include" /R /Y /Q
+xcopy "PropertyList.h" ".\include" /R /Y /Q
+xcopy "PropertyStringBox.h" ".\include" /R /Y /Q
+xcopy "PropDlg.rc" ".\include" /R /Y /Q
+
+xcopy "$(SolutionDir)$(Platform)\$(Configuration)\$(TargetName).*" ..\..\BeyToolsSDK\Library\PropDlg\lib\ /Y /D /Q /R
+xcopy .\include\*.h ..\..\BeyToolsSDK\Library\PropDlg\include\ /Y /D /Q /R
+rmdir .\include /s /q</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -86,7 +106,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_WINDOWS;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalIncludeDirectories>../AngelicaSubset/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -106,6 +126,26 @@
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
+    <PostBuildEvent>
+      <Command>if not exist .\include mkdir .\include
+xcopy "AObject.h" ".\include" /R /Y /Q
+xcopy "AProperty.h" ".\include" /R /Y /Q
+xcopy "AVariant.h" ".\include" /R /Y /Q
+xcopy "Convert.h" ".\include" /R /Y /Q
+xcopy "PropertyBooleanBox.h" ".\include" /R /Y /Q
+xcopy "PropertyBox.h" ".\include" /R /Y /Q
+xcopy "PropertyDoubleBox.h" ".\include" /R /Y /Q
+xcopy "PropertyFloatBox.h" ".\include" /R /Y /Q
+xcopy "PropertyIntegerBox.h" ".\include" /R /Y /Q
+xcopy "PropertyInteger64Box.h" ".\include" /R /Y /Q
+xcopy "PropertyList.h" ".\include" /R /Y /Q
+xcopy "PropertyStringBox.h" ".\include" /R /Y /Q
+xcopy "PropDlg.rc" ".\include" /R /Y /Q
+
+xcopy "$(SolutionDir)$(Platform)\$(Configuration)\$(TargetName).*" ..\..\BeyToolsSDK\Library\PropDlg\lib\ /Y /D /Q /R
+xcopy .\include\*.h ..\..\BeyToolsSDK\Library\PropDlg\include\ /Y /D /Q /R
+rmdir .\include /s /q</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AObject.cpp" />

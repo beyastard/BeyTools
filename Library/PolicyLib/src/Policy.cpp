@@ -65,7 +65,7 @@ bool CTriggerData::Load(std::ifstream& ifs)
 			case _e_operation::o_talk:
 				pTemp->pParam = new O_TALK_TEXT;
 				ifs.read(reinterpret_cast<char*>(&((O_TALK_TEXT*)pTemp->pParam)->uSize), sizeof(uint32_t));
-				((O_TALK_TEXT*)pTemp->pParam)->szData = new uint16_t[((O_TALK_TEXT*)pTemp->pParam)->uSize / 2];
+				((O_TALK_TEXT*)pTemp->pParam)->szData = new uint16_t[((O_TALK_TEXT*)pTemp->pParam)->uSize / 2 + 1];
 				ifs.read(reinterpret_cast<char*>(((O_TALK_TEXT*)pTemp->pParam)->szData), ((O_TALK_TEXT*)pTemp->pParam)->uSize);
 				break;
 			case _e_operation::o_run_trigger:
@@ -152,7 +152,7 @@ bool CTriggerData::Load(std::ifstream& ifs)
 			case _e_operation::o_talk:
 				pTemp->pParam = new O_TALK_TEXT;
 				ifs.read(reinterpret_cast<char*>(&((O_TALK_TEXT*)pTemp->pParam)->uSize), sizeof(uint32_t));
-				((O_TALK_TEXT*)pTemp->pParam)->szData = new uint16_t[((O_TALK_TEXT*)pTemp->pParam)->uSize / 2];
+				((O_TALK_TEXT*)pTemp->pParam)->szData = new uint16_t[((O_TALK_TEXT*)pTemp->pParam)->uSize / 2 + 1];
 				ifs.read(reinterpret_cast<char*>(((O_TALK_TEXT*)pTemp->pParam)->szData), ((O_TALK_TEXT*)pTemp->pParam)->uSize);
 				((O_TALK_TEXT*)pTemp->pParam)->szData[((O_TALK_TEXT*)pTemp->pParam)->uSize / 2] = 0;
 				break;
@@ -260,7 +260,7 @@ bool CTriggerData::Load(std::ifstream& ifs)
 				pTemp->pParam = 0;
 			}
 
-			ifs.read(reinterpret_cast<char*>(pTemp->mTarget.pParam), sizeof(int32_t));
+			ifs.read(reinterpret_cast<char*>(&pTemp->mTarget.iType), sizeof(int32_t));
 			switch ((_e_target)pTemp->mTarget.iType)
 			{
 			case _e_target::t_occupation_list:
@@ -398,7 +398,7 @@ bool CTriggerData::Save(std::ofstream& ofs)
 			break;
 		}
 
-		ofs.write(reinterpret_cast<const char*>(pTemp->pParam), sizeof(int32_t));
+		ofs.write(reinterpret_cast<const char*>(&pTemp->iType), sizeof(int32_t));
 		switch ((_e_target)pTemp->mTarget.iType)
 		{
 		case _e_target::t_occupation_list:
@@ -1225,9 +1225,9 @@ size_t CPolicyDataManager::GetPolicyNum() const
 	return listPolicy.size();
 }
 
-CPolicyData* CPolicyDataManager::GetPolicy(int32_t ndx)
+CPolicyData* CPolicyDataManager::GetPolicy(size_t ndx)
 {
-	if (ndx >= 0 && ndx < (int32_t)listPolicy.size())
+	if (ndx >= 0 && ndx < listPolicy.size())
 		return listPolicy[ndx];
 	else
 		return nullptr;

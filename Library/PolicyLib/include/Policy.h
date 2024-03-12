@@ -312,7 +312,7 @@ public:
 	void Release();
 
 	size_t GetPolicyNum() const;
-	CPolicyData* GetPolicy(int32_t ndx);
+	CPolicyData* GetPolicy(size_t ndx);
 
 private:
 	std::vector<CPolicyData*> listPolicy;

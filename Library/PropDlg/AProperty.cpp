@@ -20,7 +20,7 @@ void StringToValue(bool& value, const char* s)
 		value = false;
 }
 
-void StringToValue(int32_t& value, const char* s)
+void StringToValue(int& value, const char* s)
 {
 	int _ = sscanf(s, "%d", &value);
 }

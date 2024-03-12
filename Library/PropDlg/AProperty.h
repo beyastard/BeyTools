@@ -47,7 +47,7 @@ enum
 };
 
 void StringToValue(AVariant& var, const char* str);
-void StringToValue(int32_t& value, const char* str);
+void StringToValue(int& value, const char* str);
 void StringToValue(float& value, const char* str);
 void StringToValue(bool& value, const char* str);
 void StringToValue(AString& value, const char* str);
@@ -56,7 +56,7 @@ void StringToValue(A3DCOLOR& value, const char* str);
 void StringToValue(AScriptCodeData& value, const char* str);
 
 void ValueToString(const AVariant& var, AString& str);
-void ValueToString(int32_t value, AString& str);
+void ValueToString(int value, AString& str);
 void ValueToString(float value, AString& str);
 void ValueToString(bool value, AString& str);
 void ValueToString(const AString& value, AString& str);

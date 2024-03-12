@@ -192,29 +192,29 @@ struct O_TALK_TEXT
 	uint32_t uSize;
 	uint16_t* szData;
 
-	O_TALK_TEXT()
-		: uSize(0)
-		, szData(nullptr)
-	{}
-
-	O_TALK_TEXT(uint32_t txtSize, const uint16_t* data)
-		: uSize(txtSize)
-	{
-		szData = nullptr;
-		if (txtSize > 0 && data != nullptr)
-		{
-			szData = static_cast<uint16_t*>(std::malloc(txtSize * sizeof(uint16_t)));
-			if (szData != nullptr)
-				std::memcpy(szData, data, txtSize * sizeof(uint16_t));
-			else
-				throw std::runtime_error("Memory allocation failed!");
-		}
-	}
-
-	~O_TALK_TEXT()
-	{
-		std::free(szData);
-	}
+	//O_TALK_TEXT()
+	//	: uSize(0)
+	//	, szData(nullptr)
+	//{}
+	//
+	//O_TALK_TEXT(uint32_t txtSize, const uint16_t* data)
+	//	: uSize(txtSize)
+	//{
+	//	szData = nullptr;
+	//	if (txtSize > 0 && data != nullptr)
+	//	{
+	//		szData = static_cast<uint16_t*>(std::malloc(txtSize * sizeof(uint16_t)));
+	//		if (szData != nullptr)
+	//			std::memcpy(szData, data, txtSize * sizeof(uint16_t));
+	//		else
+	//			throw std::runtime_error("Memory allocation failed!");
+	//	}
+	//}
+	//
+	//~O_TALK_TEXT()
+	//{
+	//	std::free(szData);
+	//}
 };
 
 struct O_RUN_TRIGGER
@@ -570,29 +570,29 @@ struct O_WHISPER_TEXT
 	uint32_t uSize;
 	uint16_t* szData;
 
-	O_WHISPER_TEXT()
-		: uSize(0)
-		, szData(nullptr)
-	{}
-
-	O_WHISPER_TEXT(uint32_t txtSize, const uint16_t* data)
-		: uSize(txtSize)
-	{
-		szData = nullptr;
-		if (txtSize > 0 && data != nullptr)
-		{
-			szData = static_cast<uint16_t*>(std::malloc(txtSize * sizeof(uint16_t)));
-			if (szData != nullptr)
-				std::memcpy(szData, data, txtSize * sizeof(uint16_t));
-			else
-				throw std::runtime_error("Memory allocation failed!");
-		}
-	}
-
-	~O_WHISPER_TEXT()
-	{
-		std::free(szData);
-	}
+	//O_WHISPER_TEXT()
+	//	: uSize(0)
+	//	, szData(nullptr)
+	//{}
+	//
+	//O_WHISPER_TEXT(uint32_t txtSize, const uint16_t* data)
+	//	: uSize(txtSize)
+	//{
+	//	szData = nullptr;
+	//	if (txtSize > 0 && data != nullptr)
+	//	{
+	//		szData = static_cast<uint16_t*>(std::malloc(txtSize * sizeof(uint16_t)));
+	//		if (szData != nullptr)
+	//			std::memcpy(szData, data, txtSize * sizeof(uint16_t));
+	//		else
+	//			throw std::runtime_error("Memory allocation failed!");
+	//	}
+	//}
+	//
+	//~O_WHISPER_TEXT()
+	//{
+	//	std::free(szData);
+	//}
 };
 
 struct O_TALK_PORTRAIT
@@ -600,29 +600,29 @@ struct O_TALK_PORTRAIT
 	uint32_t uSize;
 	uint16_t* szData;
 
-	O_TALK_PORTRAIT()
-		: uSize(0)
-		, szData(nullptr)
-	{}
-
-	O_TALK_PORTRAIT(uint32_t txtSize, const uint16_t* data)
-		: uSize(txtSize)
-	{
-		szData = nullptr;
-		if (txtSize > 0 && data != nullptr)
-		{
-			szData = static_cast<uint16_t*>(std::malloc(txtSize * sizeof(uint16_t)));
-			if (szData != nullptr)
-				std::memcpy(szData, data, txtSize * sizeof(uint16_t));
-			else
-				throw std::runtime_error("Memory allocation failed!");
-		}
-	}
-
-	~O_TALK_PORTRAIT()
-	{
-		std::free(szData);
-	}
+	//O_TALK_PORTRAIT()
+	//	: uSize(0)
+	//	, szData(nullptr)
+	//{}
+	//
+	//O_TALK_PORTRAIT(uint32_t txtSize, const uint16_t* data)
+	//	: uSize(txtSize)
+	//{
+	//	szData = nullptr;
+	//	if (txtSize > 0 && data != nullptr)
+	//	{
+	//		szData = static_cast<uint16_t*>(std::malloc(txtSize * sizeof(uint16_t)));
+	//		if (szData != nullptr)
+	//			std::memcpy(szData, data, txtSize * sizeof(uint16_t));
+	//		else
+	//			throw std::runtime_error("Memory allocation failed!");
+	//	}
+	//}
+	//
+	//~O_TALK_PORTRAIT()
+	//{
+	//	std::free(szData);
+	//}
 };
 
 // *********** Target Occupation ***********

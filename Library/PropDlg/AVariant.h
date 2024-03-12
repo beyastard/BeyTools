@@ -7,7 +7,7 @@
 
 #include <cassert>
 
-#define DEFINEOPERATOR(type) operator type() {return *(type*)(&m_avData);}
+#define DEFINEOPERATOR(type) operator type() { return *(type*)(&m_avData); }
 
 // forward declarations
 class ASet;
