@@ -78,12 +78,12 @@ protected:
 
 	virtual void BuildProperty()
 	{
-		attack_type.AddElement("Melee ", a_close_battle);
-		attack_type.AddElement("Ranged ", a_skill);
-		attack_type.AddElement("Magic ", a_long_distance);
-		attack_type.AddElement("Melee + Ranged ", a_skill_and_battle);
+		attack_type.AddElement(L"Melee ", a_close_battle);
+		attack_type.AddElement(L"Ranged ", a_skill);
+		attack_type.AddElement(L"Magic ", a_long_distance);
+		attack_type.AddElement(L"Melee + Ranged ", a_skill_and_battle);
 
-		m_pProperty->DynAddProperty(AVariant(m_Data.uType), "Attack Type ", &attack_type);
+		m_pProperty->DynAddProperty(AVariant(m_Data.uType), L"Attack Type ", &attack_type);
 	}
 
 	virtual void UpdateProperty(bool bGet)
@@ -110,8 +110,8 @@ public:
 protected:
 	virtual void BuildProperty()
 	{
-		m_pProperty->DynAddProperty(AVariant(m_Data.uSkill), "Skill ");
-		m_pProperty->DynAddProperty(AVariant(m_Data.uLevel), "Level ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.uSkill), L"Skill ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.uLevel), L"Level ");
 	}
 
 	virtual void UpdateProperty(bool bGet)
@@ -154,29 +154,26 @@ protected:
 	virtual void BuildProperty()
 	{
 		char szText[1024];
-		WideCharToMultiByte(CODEPAGE, 0, (LPWSTR)m_Data.szData, m_Data.uSize / 2, szText, 1024, nullptr, FALSE);
-		m_pProperty->DynAddProperty(AVariant((szText)), "Text ");
+		std::memcpy(szText, m_Data.szData, 1024);
+		auto ss = reinterpret_cast<wchar_t*>(szText);
+		m_pProperty->DynAddProperty(AVariant((ss)), L"Text ");
 	}
 
 	virtual void UpdateProperty(bool bGet)
 	{
-		char szText[1024];
-		strcpy(szText, "\0");
+		wchar_t szText[1024];
+		wcscpy(szText, L"\0");
 		if (bGet)
 		{
-			CStringA temp = CStringA(m_pProperty->GetPropVal(0));
+			CString temp = CString(m_pProperty->GetPropVal(0));
 			if (!temp.IsEmpty())
 			{
-				strcpy(szText, temp.GetBuffer(0));
+				wcscpy(szText, temp.GetBuffer(0));
 				temp.ReleaseBuffer();
 			}
-			MultiByteToWideChar(CODEPAGE, 0, szText, 1024, (LPWSTR)m_Data.szData, OP_TEXT_LENGTH);
 		}
 		else
-		{
-			WideCharToMultiByte(CODEPAGE, 0, (LPWSTR)m_Data.szData, OP_TEXT_LENGTH, szText, 1024, nullptr, FALSE);
 			m_pProperty->SetPropVal(0, AVariant(CString(szText)));
-		}
 	}
 };
 
@@ -216,7 +213,7 @@ protected:
 		CString temp;
 		m_pTriggerFunc = new TRIGGER_ID_FUNCS;
 		m_pTriggerFunc->m_pParent = this;
-		m_pProperty->DynAddProperty(AVariant(temp), "Trigger ", (ASet*)m_pTriggerFunc, nullptr, WAY_CUSTOM);
+		m_pProperty->DynAddProperty(AVariant(temp), L"Trigger ", (ASet*)m_pTriggerFunc, nullptr, WAY_CUSTOM);
 		UpdateProperty(false);
 	}
 
@@ -250,10 +247,10 @@ protected:
 			{
 				CTriggerData* pData = m_pPolicyData->GetTriggerPtr(i);
 				if (!pData->IsRun())
-					trigger_list.AddElement(pData->GetName(), pData->GetID());
+					trigger_list.AddElement(Convert::CharToWChar(pData->GetName()), pData->GetID());
 			}
 		}
-		m_pProperty->DynAddProperty(AVariant(m_Data.uID), "Trigger ", &trigger_list);
+		m_pProperty->DynAddProperty(AVariant(m_Data.uID), L"Trigger ", &trigger_list);
 	}
 
 	virtual void UpdateProperty(bool bGet)
@@ -288,10 +285,10 @@ protected:
 			{
 				CTriggerData* pData = m_pPolicyData->GetTriggerPtr(i);
 				if (!pData->IsRun())
-					trigger_list.AddElement(pData->GetName(), pData->GetID());
+					trigger_list.AddElement(Convert::CharToWChar(pData->GetName()), pData->GetID());
 			}
 		}
-		m_pProperty->DynAddProperty(AVariant(m_Data.uID), "Trigger ", &trigger_list);
+		m_pProperty->DynAddProperty(AVariant(m_Data.uID), L"Trigger ", &trigger_list);
 	}
 
 	virtual void UpdateProperty(bool bGet)
@@ -319,9 +316,9 @@ public:
 protected:
 	virtual void BuildProperty()
 	{
-		m_pProperty->DynAddProperty(AVariant(m_Data.uID), "Timer ID ");
-		m_pProperty->DynAddProperty(AVariant(m_Data.uPeriod), "Time Period ");
-		m_pProperty->DynAddProperty(AVariant(m_Data.uCounter), "Frequency ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.uID), L"Timer ID ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.uPeriod), L"Time Period ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.uCounter), L"Frequency ");
 	}
 
 	virtual void UpdateProperty(bool bGet)
@@ -355,7 +352,7 @@ public:
 protected:
 	virtual void BuildProperty()
 	{
-		m_pProperty->DynAddProperty(AVariant(m_Data.uID), "Timer ID ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.uID), L"Timer ID ");
 	}
 
 	virtual void UpdateProperty(bool bGet)
@@ -432,8 +429,8 @@ public:
 protected:
 	virtual void BuildProperty()
 	{
-		m_pProperty->DynAddProperty(AVariant(m_Data.uID), "Monster Controller ID ");
-		m_pProperty->DynAddProperty(AVariant(m_Data.bStop), "Deactivate? ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.uID), L"Monster Controller ID ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.bStop), L"Deactivate? ");
 	}
 
 	virtual void UpdateProperty(bool bGet)
@@ -475,14 +472,14 @@ protected:
 		char szText[MAX_PATH];
 		memset(szText, 0, MAX_PATH);
 		WideCharToMultiByte(20932, 0, (LPWSTR)m_Data.szName, 16, szText, MAX_PATH, nullptr, FALSE);
-		m_pProperty->DynAddProperty(AVariant(CString(szText)), "Monster Name (9 characters) ");
-		m_pProperty->DynAddProperty(AVariant(m_Data.uMonsterID), "Monster ID ");
-		m_pProperty->DynAddProperty(AVariant(m_Data.uBodyMonsterID), "Monster Form ");
-		m_pProperty->DynAddProperty(AVariant(m_Data.uMonsterNum), "Number of Monsters ");
-		m_pProperty->DynAddProperty(AVariant(m_Data.uLife), "Monster Survival Time (seconds) ");
-		m_pProperty->DynAddProperty(AVariant(m_Data.fRange), "Distance from Body ");
-		m_pProperty->DynAddProperty(AVariant(m_Data.bFollow), "Whether to follow? ");
-		m_pProperty->DynAddProperty(AVariant(m_Data.bDisappear), "Does it disappear? ");
+		m_pProperty->DynAddProperty(AVariant(CString(szText)), L"Monster Name (9 characters) ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.uMonsterID), L"Monster ID ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.uBodyMonsterID), L"Monster Form ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.uMonsterNum), L"Number of Monsters ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.uLife), L"Monster Survival Time (seconds) ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.fRange), L"Distance from Body ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.bFollow), L"Whether to follow? ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.bDisappear), L"Does it disappear? ");
 	}
 
 	virtual void UpdateProperty(bool bGet)
@@ -540,7 +537,7 @@ public:
 protected:
 	virtual void BuildProperty()
 	{
-		m_pProperty->DynAddProperty(AVariant(m_Data.uTaskID), "Task ID ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.uTaskID), L"Task ID ");
 	}
 
 	virtual void UpdateProperty(bool bGet)
@@ -569,12 +566,12 @@ protected:
 
 	virtual void BuildProperty()
 	{
-		path_type.AddElement("Terminal Stop ", 0);
-		path_type.AddElement("Backtrack ", 1);
-		path_type.AddElement("Head-to-Tail Loop ", 2);
+		path_type.AddElement(L"Terminal Stop ", 0);
+		path_type.AddElement(L"Backtrack ", 1);
+		path_type.AddElement(L"Head-to-Tail Loop ", 2);
 
-		m_pProperty->DynAddProperty(AVariant(m_Data.uPathID), "Path ID ");
-		m_pProperty->DynAddProperty(AVariant(m_Data.iType), "Type ", &path_type);
+		m_pProperty->DynAddProperty(AVariant(m_Data.uPathID), L"Path ID ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.iType), L"Type ", &path_type);
 	}
 
 	virtual void UpdateProperty(bool bGet)
@@ -616,7 +613,7 @@ public:
 protected:
 	virtual void BuildProperty()
 	{
-		m_pProperty->DynAddProperty(AVariant(m_Data.fRange), "Range(m) ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.fRange), L"Range(m) ");
 	}
 
 	virtual void UpdateProperty(bool bGet)
@@ -644,9 +641,9 @@ public:
 protected:
 	virtual void BuildProperty()
 	{
-		m_pProperty->DynAddProperty(AVariant(m_Data.uSkill), "Skill ");
-		m_pProperty->DynAddProperty(AVariant(m_Data.uLevel), "Level ");
-		m_pProperty->DynAddProperty(AVariant(m_Data.fRange), "Range(1-512) ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.uSkill), L"Skill ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.uLevel), L"Level ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.fRange), L"Range(1-512) ");
 	}
 
 	virtual void UpdateProperty(bool bGet)
@@ -697,8 +694,8 @@ public:
 protected:
 	virtual void BuildProperty()
 	{
-		m_pProperty->DynAddProperty(AVariant(m_Data.iID), "Variable ID ");
-		m_pProperty->DynAddProperty(AVariant(m_Data.iValue), "Value ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.iID), L"Variable ID ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.iValue), L"Value ");
 	}
 
 	virtual void UpdateProperty(bool bGet)
@@ -732,8 +729,8 @@ public:
 protected:
 	virtual void BuildProperty()
 	{
-		m_pProperty->DynAddProperty(AVariant(m_Data.iID), "Variable ID ");
-		m_pProperty->DynAddProperty(AVariant(m_Data.iValue), "Value ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.iID), L"Variable ID ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.iValue), L"Value ");
 	}
 
 	virtual void UpdateProperty(bool bGet)
@@ -767,8 +764,8 @@ public:
 protected:
 	virtual void BuildProperty()
 	{
-		m_pProperty->DynAddProperty(AVariant(m_Data.iIDDst), "Assign global variable ID dst ");
-		m_pProperty->DynAddProperty(AVariant(m_Data.iIDSrc), "Assign global variable ID src ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.iIDDst), L"Assign global variable ID dst ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.iIDSrc), L"Assign global variable ID src ");
 	}
 
 	virtual void UpdateProperty(bool bGet)
@@ -805,11 +802,11 @@ public:
 protected:
 	virtual void BuildProperty()
 	{
-		m_pProperty->DynAddProperty(AVariant(m_Data.uMineralID), "Mineral ID ");
-		m_pProperty->DynAddProperty(AVariant(m_Data.uMineralNum), "Mineral Quantity ");
-		m_pProperty->DynAddProperty(AVariant(m_Data.uHP), "Mineral Life ");
-		m_pProperty->DynAddProperty(AVariant(m_Data.fRange), "Distance from Body ");
-		m_pProperty->DynAddProperty(AVariant(m_Data.bBind), "Whether to bind Target ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.uMineralID), L"Mineral ID ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.uMineralNum), L"Mineral Quantity ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.uHP), L"Mineral Life ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.fRange), L"Distance from Body ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.bBind), L"Whether to bind Target ");
 	}
 
 	virtual void UpdateProperty(bool bGet)
@@ -851,9 +848,9 @@ public:
 protected:
 	virtual void BuildProperty()
 	{
-		m_pProperty->DynAddProperty(AVariant(m_Data.uItemID), "Item ID ");
-		m_pProperty->DynAddProperty(AVariant(m_Data.uItemNum), "Item Amount ");
-		m_pProperty->DynAddProperty(AVariant(m_Data.uExpireDate), "Item Life ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.uItemID), L"Item ID ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.uItemNum), L"Item Amount ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.uExpireDate), L"Item Life ");
 	}
 
 	virtual void UpdateProperty(bool bGet)
@@ -889,7 +886,7 @@ public:
 protected:
 	virtual void BuildProperty()
 	{
-		m_pProperty->DynAddProperty(AVariant(m_Data.iHateValue), "Hate Value ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.iHateValue), L"Hate Value ");
 	}
 
 	virtual void UpdateProperty(bool bGet)
@@ -917,7 +914,7 @@ public:
 protected:
 	virtual void BuildProperty()
 	{
-		m_pProperty->DynAddProperty(AVariant(m_Data.iId), "Event ID ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.iId), L"Event ID ");
 	}
 
 	virtual void UpdateProperty(bool bGet)
@@ -945,7 +942,7 @@ public:
 protected:
 	virtual void BuildProperty()
 	{
-		m_pProperty->DynAddProperty(AVariant(m_Data.iId), "Event ID ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.iId), L"Event ID ");
 	}
 
 	virtual void UpdateProperty(bool bGet)
@@ -975,9 +972,9 @@ public:
 protected:
 	virtual void BuildProperty()
 	{
-		m_pProperty->DynAddProperty(AVariant(m_Data.uItemID), "Item ID ");
-		m_pProperty->DynAddProperty(AVariant(m_Data.uItemNum), "Item Amount ");
-		m_pProperty->DynAddProperty(AVariant(m_Data.uExpireDate), "Item Life ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.uItemID), L"Item ID ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.uItemNum), L"Item Amount ");
+		m_pProperty->DynAddProperty(AVariant(m_Data.uExpireDate), L"Item Life ");
 	}
 
 	virtual void UpdateProperty(bool bGet)
@@ -1024,29 +1021,26 @@ protected:
 	virtual void BuildProperty()
 	{
 		char szText[1024];
-		WideCharToMultiByte(CODEPAGE, 0, (LPWSTR)m_Data.szData, m_Data.uSize / 2, szText, 1024, nullptr, FALSE);
-		m_pProperty->DynAddProperty(AVariant(CString(szText)), "Text ");
+		std::memcpy(szText, m_Data.szData, 1024);
+		auto ss = reinterpret_cast<wchar_t*>(szText);
+		m_pProperty->DynAddProperty(AVariant((ss)), L"Text ");
 	}
 
 	virtual void UpdateProperty(bool bGet)
 	{
-		char szText[1024];
-		strcpy(szText, "\0");
+		wchar_t szText[1024];
+		wcscpy(szText, L"\0");
 		if (bGet)
 		{
-			CStringA temp = CStringA(m_pProperty->GetPropVal(0));
+			CString temp = CString(m_pProperty->GetPropVal(0));
 			if (!temp.IsEmpty())
 			{
-				strcpy(szText, temp.GetBuffer(0));
+				wcscpy(szText, temp.GetBuffer(0));
 				temp.ReleaseBuffer();
 			}
-			MultiByteToWideChar(CODEPAGE, 0, szText, 1024, (LPWSTR)m_Data.szData, OP_TEXT_LENGTH);
 		}
 		else
-		{
-			WideCharToMultiByte(CODEPAGE, 0, (LPWSTR)m_Data.szData, OP_TEXT_LENGTH, szText, 1024, nullptr, FALSE);
 			m_pProperty->SetPropVal(0, AVariant(CString(szText)));
-		}
 	}
 };
 
@@ -1075,28 +1069,25 @@ protected:
 	virtual void BuildProperty()
 	{
 		char szText[1024];
-		WideCharToMultiByte(CODEPAGE, 0, (LPWSTR)m_Data.szData, m_Data.uSize / 2, szText, 1024, nullptr, FALSE);
-		m_pProperty->DynAddProperty(AVariant(CString(szText)), "Text ");
+		std::memcpy(szText, m_Data.szData, 1024);
+		auto ss = reinterpret_cast<wchar_t*>(szText);
+		m_pProperty->DynAddProperty(AVariant((ss)), L"Text ");
 	}
 
 	virtual void UpdateProperty(bool bGet)
 	{
-		char szText[1024];
-		strcpy(szText, "\0");
+		wchar_t szText[1024];
+		wcscpy(szText, L"\0");
 		if (bGet)
 		{
-			CStringA temp = CStringA(m_pProperty->GetPropVal(0));
+			CString temp = CString(m_pProperty->GetPropVal(0));
 			if (!temp.IsEmpty())
 			{
-				strcpy(szText, temp.GetBuffer(0));
+				wcscpy(szText, temp.GetBuffer(0));
 				temp.ReleaseBuffer();
 			}
-			MultiByteToWideChar(CODEPAGE, 0, szText, 1024, (LPWSTR)m_Data.szData, OP_TEXT_LENGTH);
 		}
 		else
-		{
-			WideCharToMultiByte(CODEPAGE, 0, (LPWSTR)m_Data.szData, OP_TEXT_LENGTH, szText, 1024, nullptr, FALSE);
 			m_pProperty->SetPropVal(0, AVariant(CString(szText)));
-		}
 	}
 };

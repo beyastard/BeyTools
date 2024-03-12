@@ -7,6 +7,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PolicyLib", "..\Library\Pol
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AngelicaSubset", "..\Library\AngelicaSubset\AngelicaSubset.vcxproj", "{E8676130-78AE-4C16-B8DC-A482D1792BF4}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PropDlg", "..\Library\PropDlg\PropDlg.vcxproj", "{5551BC6F-CB4F-499D-A9A5-A66989A61404}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PropDlgW", "..\Library\PropDlgW\PropDlgW.vcxproj", "{3B0CBE4F-9300-4364-88B4-9F30397BFFB8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +25,14 @@ Global
 		{E8676130-78AE-4C16-B8DC-A482D1792BF4}.Debug|x64.Build.0 = Debug|x64
 		{E8676130-78AE-4C16-B8DC-A482D1792BF4}.Release|x64.ActiveCfg = Release|x64
 		{E8676130-78AE-4C16-B8DC-A482D1792BF4}.Release|x64.Build.0 = Release|x64
+		{5551BC6F-CB4F-499D-A9A5-A66989A61404}.Debug|x64.ActiveCfg = Debug|x64
+		{5551BC6F-CB4F-499D-A9A5-A66989A61404}.Debug|x64.Build.0 = Debug|x64
+		{5551BC6F-CB4F-499D-A9A5-A66989A61404}.Release|x64.ActiveCfg = Release|x64
+		{5551BC6F-CB4F-499D-A9A5-A66989A61404}.Release|x64.Build.0 = Release|x64
+		{3B0CBE4F-9300-4364-88B4-9F30397BFFB8}.Debug|x64.ActiveCfg = Debug|x64
+		{3B0CBE4F-9300-4364-88B4-9F30397BFFB8}.Debug|x64.Build.0 = Debug|x64
+		{3B0CBE4F-9300-4364-88B4-9F30397BFFB8}.Release|x64.ActiveCfg = Release|x64
+		{3B0CBE4F-9300-4364-88B4-9F30397BFFB8}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

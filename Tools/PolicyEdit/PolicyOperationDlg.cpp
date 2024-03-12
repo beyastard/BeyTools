@@ -527,7 +527,7 @@ BOOL CPolicyOperationDlg::OnInitDialog()
 	rc.right = rc.left + width;
 	rc.bottom = rc.top + length;
 
-	BOOL bResult = m_pList->Create("Operation Table", WS_CHILD | WS_VISIBLE, rc, this, 111);
+	BOOL bResult = m_pList->Create(L"Operation Table", WS_CHILD | WS_VISIBLE, rc, this, 111);
 
 	// Populate the list of operation types
 	for (int32_t i = 0; i < (int32_t)CTriggerData::_e_operation::o_num; i++)

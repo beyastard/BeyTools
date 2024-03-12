@@ -19,6 +19,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{318C08AC
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PolicyEdit", "..\Tools\PolicyEdit\PolicyEdit.vcxproj", "{65B21A28-1E6A-4214-B76F-CD518CD7EBA6}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PropDlgW", "..\Library\PropDlgW\PropDlgW.vcxproj", "{3B0CBE4F-9300-4364-88B4-9F30397BFFB8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -45,6 +47,10 @@ Global
 		{65B21A28-1E6A-4214-B76F-CD518CD7EBA6}.Debug|x64.Build.0 = Debug|x64
 		{65B21A28-1E6A-4214-B76F-CD518CD7EBA6}.Release|x64.ActiveCfg = Release|x64
 		{65B21A28-1E6A-4214-B76F-CD518CD7EBA6}.Release|x64.Build.0 = Release|x64
+		{3B0CBE4F-9300-4364-88B4-9F30397BFFB8}.Debug|x64.ActiveCfg = Debug|x64
+		{3B0CBE4F-9300-4364-88B4-9F30397BFFB8}.Debug|x64.Build.0 = Debug|x64
+		{3B0CBE4F-9300-4364-88B4-9F30397BFFB8}.Release|x64.ActiveCfg = Release|x64
+		{3B0CBE4F-9300-4364-88B4-9F30397BFFB8}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -55,6 +61,7 @@ Global
 		{91AE2613-C9B2-401B-A901-951E42D36A45} = {FC9C6596-6165-4EAE-8EE4-8D75187E80B5}
 		{5551BC6F-CB4F-499D-A9A5-A66989A61404} = {A595223D-AF37-48D8-9490-15FD6B2DFA68}
 		{65B21A28-1E6A-4214-B76F-CD518CD7EBA6} = {318C08AC-ECC7-49FA-9FA7-340B87F33687}
+		{3B0CBE4F-9300-4364-88B4-9F30397BFFB8} = {A595223D-AF37-48D8-9490-15FD6B2DFA68}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EE742935-B154-4E33-BDAB-70D1EB5F2430}
