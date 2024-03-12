@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "Policy.h"
 #include "PolicyType.h"
 
@@ -20,14 +21,18 @@ CTriggerData::CTriggerData()
 	, runCondition(_run_condition::run_attack_effect)
 	, uID(0)
 	, rootCondition(nullptr)
+	, strName("")
 {
-	std::memset(szName, 0, sizeof(szName));
+	//std::memset(szName, 0, sizeof(szName));
 }
 
 CTriggerData::~CTriggerData() {}
 
 bool CTriggerData::Load(std::ifstream& ifs)
 {
+	char c;
+	int32_t count = 0;
+
 	uint32_t dwVersion;
 	ifs.read(reinterpret_cast<char*>(&dwVersion), sizeof(uint32_t));
 
@@ -38,7 +43,12 @@ bool CTriggerData::Load(std::ifstream& ifs)
 		ifs.read(reinterpret_cast<char*>(&bActive), sizeof(bool));
 		ifs.read(reinterpret_cast<char*>(&bRun), sizeof(bool));
 		ifs.read(reinterpret_cast<char*>(&runCondition), sizeof(char));
-		ifs.read(szName, sizeof(char) * 128);
+		
+		while (count < 128 && ifs.get(c))
+		{
+			strName.push_back(c);
+			count++;
+		}
 
 		int32_t n = 0;
 
@@ -125,7 +135,12 @@ bool CTriggerData::Load(std::ifstream& ifs)
 		ifs.read(reinterpret_cast<char*>(&bActive), sizeof(bool));
 		ifs.read(reinterpret_cast<char*>(&bRun), sizeof(bool));
 		ifs.read(reinterpret_cast<char*>(&runCondition), sizeof(char));
-		ifs.read(szName, sizeof(char) * 128);
+		
+		while (count < 128 && ifs.get(c))
+		{
+			strName.push_back(c);
+			count++;
+		}
 
 		int32_t n = 0;
 
@@ -286,7 +301,11 @@ bool CTriggerData::Save(std::ofstream& ofs)
 	ofs.write(reinterpret_cast<const char*>(&bActive), sizeof(bool));
 	ofs.write(reinterpret_cast<const char*>(&bRun), sizeof(bool));
 	ofs.write(reinterpret_cast<const char*>(&runCondition), sizeof(char));
-	ofs.write(szName, sizeof(char) * 128);
+
+	ofs.write(strName.c_str(),
+		(static_cast<size_t>(128) < strName.size()
+			? static_cast<size_t>(128)
+			: strName.size()));
 
 	size_t n;
 
@@ -469,8 +488,7 @@ CTriggerData* CTriggerData::CopyObject()
 	if (pNewObject == 0)
 		return 0;
 
-	strcpy(pNewObject->szName, szName);
-
+	pNewObject->strName = strName;
 	pNewObject->bActive = bActive;
 	pNewObject->bRun = bRun;
 	pNewObject->runCondition = runCondition;

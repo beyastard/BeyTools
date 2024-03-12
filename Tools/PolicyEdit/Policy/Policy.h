@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include "Convert.h"
+
 constexpr auto F_POLICY_VERSION = 0;
 constexpr auto F_TRIGGER_VERSION = 11;
 constexpr auto F_POLICY_EXP_VERSION = 0;
@@ -203,8 +205,10 @@ public:
 	bool Save(std::ofstream& ofs);
 	void Release();
 
-	char* GetName() { return szName; }
-	void SetName(const char* name) { strcpy(szName, name); }
+	//char* GetName() { return szName; }
+	std::string& GetName() { return strName; }
+	//void SetName(const char* name) { strcpy(szName, name); }
+	void SetName(const std::string& name) { strName = name; }
 
 	bool IsActive() const { return bActive; }
 	void ActiveTrigger() { bActive = true; }
@@ -245,7 +249,8 @@ protected:
 	static bool SaveConditionTree(std::ofstream& ofs, const _s_tree_item* pNode);
 
 private:
-	char szName[128];
+	//char szName[128];
+	std::string strName;
 	bool bActive;
 	bool bRun;
 	_run_condition runCondition;

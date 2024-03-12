@@ -13,8 +13,11 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Dialog">
-      <UniqueIdentifier>{c167be78-3939-474e-985e-4db400f038c8}</UniqueIdentifier>
+    <Filter Include="Policy">
+      <UniqueIdentifier>{d3299022-98d4-4fc5-bfb1-f54bcf6248a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Policy\Dialog">
+      <UniqueIdentifier>{2b36bb3c-3aa5-4b50-8da1-2c99c119fd26}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -33,20 +36,20 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Policy\Policy.h">
+      <Filter>Policy</Filter>
+    </ClInclude>
+    <ClInclude Include="Policy\PolicyLoader.h">
+      <Filter>Policy</Filter>
+    </ClInclude>
+    <ClInclude Include="Policy\PolicyType.h">
+      <Filter>Policy</Filter>
+    </ClInclude>
+    <ClInclude Include="Policy\TargetParam.h">
+      <Filter>Policy</Filter>
+    </ClInclude>
     <ClInclude Include="PolicyDlg.h">
-      <Filter>Dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="ConditionDlg.h">
-      <Filter>Dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="PolicyOperationDlg.h">
-      <Filter>Dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="OperationParam.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PolicyTriggerDlg.h">
-      <Filter>Dialog</Filter>
+      <Filter>Policy\Dialog</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -56,20 +59,11 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Policy\Policy.cpp">
+      <Filter>Policy</Filter>
+    </ClCompile>
     <ClCompile Include="PolicyDlg.cpp">
-      <Filter>Dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="ConditionDlg.cpp">
-      <Filter>Dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="PolicyOperationDlg.cpp">
-      <Filter>Dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="OperationParam.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PolicyTriggerDlg.cpp">
-      <Filter>Dialog</Filter>
+      <Filter>Policy\Dialog</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

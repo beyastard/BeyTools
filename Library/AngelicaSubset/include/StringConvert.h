@@ -17,4 +17,36 @@ static std::wstring string_to_wstring(const std::string& str)
     return converter.from_bytes(str);
 }
 
+static wchar_t* CharToWChar(const char* ansiText)
+{
+    int requiredSize = MultiByteToWideChar(CP_ACP, 0, ansiText, -1, nullptr, 0);
+    if (requiredSize == 0)
+        return nullptr; // Conversion failed
+
+    wchar_t* wideText = new wchar_t[requiredSize];
+    if (MultiByteToWideChar(CP_ACP, 0, ansiText, -1, wideText, requiredSize) == 0)
+    {
+        delete[] wideText;
+        return nullptr; // Conversion failed
+    }
+
+    return wideText;
+}
+
+static char* WCharToChar(const wchar_t* wideText)
+{
+    int requiredSize = WideCharToMultiByte(CP_ACP, 0, wideText, -1, nullptr, 0, nullptr, nullptr);
+    if (requiredSize == 0)
+        return nullptr; // Conversion failed
+
+    char* ansiText = new char[requiredSize];
+    if (WideCharToMultiByte(CP_ACP, 0, wideText, -1, ansiText, requiredSize, nullptr, nullptr) == 0)
+    {
+        delete[] ansiText;
+        return nullptr; // Conversion failed
+    }
+
+    return ansiText;
+}
+
 #endif
