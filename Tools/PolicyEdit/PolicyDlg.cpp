@@ -7,6 +7,10 @@
 #include "PolicyEdit.h"
 #include "PolicyDlg.h"
 #include "afxdialogex.h"
+#include "PolicyType.h"
+#include "PolicyTriggerDlg.h"
+#include "PolicyOperationDlg.h"
+#include "OperationParam.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -143,6 +147,13 @@ BEGIN_MESSAGE_MAP(CPolicyDlg, CDialogEx)
 	ON_COMMAND(ID_FILE_SAVEAS, &CPolicyDlg::OnFileSaveAs)
 	ON_COMMAND(ID_HELP_ABOUT, &CPolicyDlg::OnHelpAbout)
 	ON_LBN_SELCHANGE(IDC_LIST_POLICY, &CPolicyDlg::OnSelChangeListPolicy)
+	ON_BN_CLICKED(IDC_BUTTON_ADD_POLICY, &CPolicyDlg::OnButtonAddPolicy)
+	ON_BN_CLICKED(IDC_BUTTON_DEL_POLICY, &CPolicyDlg::OnButtonDelPolicy)
+	ON_BN_CLICKED(IDC_BUTTON_ADD_TRIGGER, &CPolicyDlg::OnButtonAddTrigger)
+	ON_BN_CLICKED(IDC_BUTTON_DEL_TRIGGER, &CPolicyDlg::OnButtonDelTrigger)
+	ON_BN_CLICKED(IDC_BUTTON_MOVE_UP, &CPolicyDlg::OnButtonMoveUp)
+	ON_BN_CLICKED(IDC_BUTTON_MOVE_DOWN, &CPolicyDlg::OnButtonMoveDown)
+	ON_LBN_DBLCLK(IDC_LIST_TRIGGER, &CPolicyDlg::OnDblclkListTrigger)
 END_MESSAGE_MAP()
 
 
@@ -190,6 +201,97 @@ CString CPolicyDlg::GetAppData(ProgramInfo info)
 		}
 	}
 	return data;
+}
+
+void CPolicyDlg::FreshTriggerList()
+{
+	if (m_pCurrentPolicy == nullptr)
+		return;
+
+	int32_t count = m_listTrigger.GetCount();
+	int32_t sel = m_listTrigger.GetCurSel();
+
+	for (int32_t i = 0; i < count; i++)
+		m_listTrigger.DeleteString(0);
+
+	int32_t n = m_pCurrentPolicy->GetTriggerPtrNum();
+	for (int32_t i = 0; i < n; ++i)
+	{
+		CTriggerData* pData = m_pCurrentPolicy->GetTriggerPtr(i);
+		if (!pData->IsRun())
+		{
+			int32_t index = m_listTrigger.AddString(Convert::GB18030ToCStringW(pData->GetName().c_str()));
+			m_listTrigger.SetItemData(index, pData->GetID());
+		}
+	}
+
+	if (sel != -1 && sel < m_listTrigger.GetCount())
+		m_listTrigger.SetCurSel(sel);
+}
+
+void CPolicyDlg::DelRedundancy()
+{
+	std::vector<unsigned> listId;
+	int32_t n = m_pCurrentPolicy->GetTriggerPtrNum();
+
+	for (int32_t i = 0; i < n; ++i)
+	{
+		CTriggerData* pData = m_pCurrentPolicy->GetTriggerPtr(i);
+		if (pData->IsRun())
+		{
+			if (!TriggerIsUse(pData->GetID()))
+				listId.push_back(pData->GetID());
+		}
+	}
+
+	n = (int32_t)listId.size();
+	for (int32_t i = 0; i < n; ++i)
+	{
+		int32_t idx = m_pCurrentPolicy->GetIndex(listId[i]);
+		if (idx != -1)
+			m_pCurrentPolicy->DelTriggerPtr(idx);
+	}
+
+	listId.clear();
+}
+
+bool CPolicyDlg::TriggerIsUse(uint32_t id)
+{
+	int32_t n = m_pCurrentPolicy->GetTriggerPtrNum();
+	for (int32_t i = 0; i < n; ++i)
+	{
+		CTriggerData* pData = m_pCurrentPolicy->GetTriggerPtr(i);
+		if (!pData->IsRun())
+		{
+			if (TraceTrigger(pData, id))
+				return true;
+		}
+	}
+	return false;
+}
+
+bool CPolicyDlg::TraceTrigger(CTriggerData* pTrigger, uint32_t id)
+{
+	if (pTrigger->GetID() == id)
+		return true;
+
+	int32_t num = pTrigger->GetOperationNum();
+	for (int32_t j = 0; j < num; ++j)
+	{
+		CTriggerData::_s_operation* pOperation = pTrigger->GetOperation(j);
+		if (pOperation->iType == (int32_t)CTriggerData::_e_operation::o_run_trigger)
+		{
+			int32_t idx = m_pCurrentPolicy->GetIndex(((O_RUN_TRIGGER*)pOperation->pParam)->uID);
+			if (idx != -1)
+			{
+				CTriggerData* pNext = m_pCurrentPolicy->GetTriggerPtr(idx);
+				if (pNext)
+					if (TraceTrigger(pNext, id))
+						return true;
+			}
+		}
+	}
+	return false;
 }
 
 BOOL CPolicyDlg::OnInitDialog()
@@ -361,4 +463,75 @@ void CPolicyDlg::OnSelChangeListPolicy()
 		triggerStr.Format(L"[%d] %s", id, triggerName.GetString());
 		m_listTrigger.AddString(triggerStr);
 	}
+}
+
+
+void CPolicyDlg::OnButtonAddPolicy()
+{
+	// TODO: Add your control notification handler code here
+}
+
+
+void CPolicyDlg::OnButtonDelPolicy()
+{
+	// TODO: Add your control notification handler code here
+}
+
+
+void CPolicyDlg::OnButtonAddTrigger()
+{
+	// TODO: Add your control notification handler code here
+}
+
+
+void CPolicyDlg::OnButtonDelTrigger()
+{
+	// TODO: Add your control notification handler code here
+}
+
+
+void CPolicyDlg::OnButtonMoveUp()
+{
+	// TODO: Add your control notification handler code here
+}
+
+
+void CPolicyDlg::OnButtonMoveDown()
+{
+	// TODO: Add your control notification handler code here
+}
+
+
+void CPolicyDlg::OnDblclkListTrigger()
+{
+	if (m_pCurrentPolicy == nullptr)
+		return;
+
+	int32_t sel = m_listTrigger.GetCurSel();
+	if (sel == -1)
+		return;
+
+	DWORD_PTR id = m_listTrigger.GetItemData(sel);
+	for (int32_t i = 0; i < m_pCurrentPolicy->GetTriggerPtrNum(); ++i)
+	{
+		CTriggerData* pData = m_pCurrentPolicy->GetTriggerPtr(i);
+		if (id == pData->GetID())
+		{
+			CPolicyTriggerDlg dlg;
+			dlg.m_pCurrentPolicy = m_pCurrentPolicy;
+			dlg.m_bModified = true;
+			dlg.m_pTriggerData = pData;
+			if (dlg.DoModal() == IDOK)
+			{
+				if (dlg.m_bIsChanged)
+					g_bPolicyModified = true;
+
+				FreshTriggerList();
+			}
+
+			break;
+		}
+	}
+
+	DelRedundancy();
 }

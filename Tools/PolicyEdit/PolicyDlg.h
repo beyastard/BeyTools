@@ -42,6 +42,12 @@ protected:
 	};
 	CString GetAppData(ProgramInfo info);
 
+	void FreshTriggerList();
+
+	void DelRedundancy();
+	bool TriggerIsUse(uint32_t id);
+	bool TraceTrigger(CTriggerData* pTrigger, uint32_t id);
+
 // Implementation
 protected:
 	HICON m_hIcon;
@@ -49,10 +55,22 @@ protected:
 
 	// Generated message map functions
 	virtual BOOL OnInitDialog();
+
+	DECLARE_MESSAGE_MAP()
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
-	DECLARE_MESSAGE_MAP()
+	afx_msg void OnFileOpen();
+	afx_msg void OnFileSaveAs();
+	afx_msg void OnHelpAbout();
+	afx_msg void OnSelChangeListPolicy();
+	afx_msg void OnButtonAddPolicy();
+	afx_msg void OnButtonDelPolicy();
+	afx_msg void OnButtonAddTrigger();
+	afx_msg void OnButtonDelTrigger();
+	afx_msg void OnButtonMoveUp();
+	afx_msg void OnButtonMoveDown();
+
 private:
 	CListBox m_listPolicy;
 	CListBox m_listTrigger;
@@ -60,8 +78,5 @@ private:
 
 	bool isFileOpen;
 public:
-	afx_msg void OnFileOpen();
-	afx_msg void OnFileSaveAs();
-	afx_msg void OnHelpAbout();
-	afx_msg void OnSelChangeListPolicy();
+	afx_msg void OnDblclkListTrigger();
 };

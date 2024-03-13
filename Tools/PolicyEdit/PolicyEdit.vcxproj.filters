@@ -51,6 +51,18 @@
     <ClInclude Include="PolicyDlg.h">
       <Filter>Policy\Dialog</Filter>
     </ClInclude>
+    <ClInclude Include="ConditionDlg.h">
+      <Filter>Policy\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="PolicyTriggerDlg.h">
+      <Filter>Policy\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="PolicyOperationDlg.h">
+      <Filter>Policy\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="Policy\OperationParam.h">
+      <Filter>Policy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PolicyEdit.cpp">
@@ -64,6 +76,18 @@
     </ClCompile>
     <ClCompile Include="PolicyDlg.cpp">
       <Filter>Policy\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="ConditionDlg.cpp">
+      <Filter>Policy\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="PolicyTriggerDlg.cpp">
+      <Filter>Policy\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="PolicyOperationDlg.cpp">
+      <Filter>Policy\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="Policy\OperationParam.cpp">
+      <Filter>Policy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
